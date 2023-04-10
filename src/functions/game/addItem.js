@@ -7,7 +7,7 @@ module.exports = (client) => {
     if (inventory.length === 0) {
       inventory = addedItem;
 
-      await Profile.findOneAndUpdate(
+      await Profile.findByIdAndUpdate(
         { _id: profileId },
         {
           inventory,
@@ -28,8 +28,8 @@ module.exports = (client) => {
         inventory = inventory.concat(addedItem[i]);
       }
     }
-    // console.log(inventory);
-    await Profile.findOneAndUpdate(
+
+    await Profile.findByIdAndUpdate(
       { _id: profileId },
       {
         inventory,

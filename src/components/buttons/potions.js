@@ -1,5 +1,4 @@
 const { ActionRowBuilder, ButtonBuilder, ButtonStyle } = require('discord.js');
-// const Profile = require('../../schemas/profile');
 
 module.exports = {
   data: {
@@ -7,6 +6,8 @@ module.exports = {
   },
 
   async execute(interaction) {
+    const { components } = interaction.message;
+
     const healButton = new ButtonBuilder()
       .setCustomId('healPotion')
       .setLabel('heal')
@@ -22,14 +23,14 @@ module.exports = {
       .setLabel('damage')
       .setStyle(ButtonStyle.Primary);
 
-    const row = interaction.message.components[0];
+    const row = components[0];
     const newRow = new ActionRowBuilder().addComponents(
       healButton,
       greaterHealButton,
       damageButton
     );
 
-    if (!interaction.message.components[1]) {
+    if (!components[1]) {
       await interaction.update({
         components: [row, newRow],
       });

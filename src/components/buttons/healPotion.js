@@ -7,16 +7,17 @@ module.exports = {
   },
 
   async execute(interaction) {
+    const { user, guild, message } = interaction;
+    const oldEmbed = message.embeds[0];
+
     const storedProfile = await Profile.findOne({
-      userId: interaction.user.id,
-      guildId: interaction.guild.id,
+      userId: user.id,
+      guildId: guild.id,
     });
 
-    const oldEmbed = interaction.message.embeds[0];
-    const healedPlayerHealth = storedProfile.health + 2 - storedProfile.monster.attack;
+    const healedPlayerHealth = storedProfile.health + 5 - storedProfile.monster.attack;
 
-    await Profile.findOneAndUpdate(
-      // eslint-disable-next-line no-underscore-dangle
+    await Profile.findByIdAndUpdate(
       { _id: storedProfile._id },
       {
         health: healedPlayerHealth,
@@ -24,7 +25,7 @@ module.exports = {
     );
 
     const newEmbed = EmbedBuilder.from(oldEmbed).spliceFields(3, 1, {
-      name: interaction.user.username,
+      name: user.username,
       value: `${healedPlayerHealth}/${storedProfile.maxHealth}`,
       inline: true,
     });

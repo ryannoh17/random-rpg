@@ -6,11 +6,13 @@ module.exports = {
     name: 'damagePotion',
   },
 
-  async execute(interaction, client) {
-    const storedProfile = await client.getProfile(
-      interaction.user.id,
-      interaction.guild.id
-    );
+  async execute(interaction) {
+    const { user, guild } = interaction;
+
+    const storedProfile = await Profile.findOne({
+      userId: user.id,
+      guildId: guild.id,
+    });
     const oldEmbed = interaction.message.embeds[0];
 
     const monster = oldEmbed.fields[1].name;

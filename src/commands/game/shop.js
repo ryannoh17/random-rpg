@@ -13,14 +13,16 @@ module.exports = {
   shopList,
   data: new SlashCommandBuilder().setName('shop').setDescription('opens shop'),
   async execute(interaction) {
+    const { user, guild } = interaction;
+
     const storedProfile = await Profile.findOne({
-      userId: interaction.user.id,
-      guildId: interaction.guild.id,
+      userId: user.id,
+      guildId: guild.id,
     });
 
     if (!storedProfile)
       return interaction.reply({
-        content: `${interaction.user.username}'s profile does not exist, use /create to make profile`,
+        content: `${user.username}'s profile does not exist, use /create to make profile`,
         ephemeral: true,
       });
 

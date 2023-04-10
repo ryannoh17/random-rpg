@@ -7,9 +7,11 @@ module.exports = {
   },
 
   async execute(interaction, client) {
+    const { user, guild } = interaction;
+
     const storedProfile = await Profile.findOne({
-      userId: interaction.user.id,
-      guildId: interaction.guild.id,
+      userId: user.id,
+      guildId: guild.id,
     });
 
     const nameList = storedProfile.inventory.map((items) => {

@@ -24,15 +24,18 @@ module.exports = {
           { name: 'Ogre', value: 'Ogre' }
         )
     ),
+  // eslint-disable-next-line consistent-return
   async execute(interaction, client) {
-    let storedProfile = await Profile.findOne({
-      userId: interaction.user.id,
-      guildId: interaction.guild.id,
+    const { user, guild } = interaction;
+
+    const storedProfile = await Profile.findOne({
+      userId: user.id,
+      guildId: guild.id,
     });
 
     if (!storedProfile)
       return interaction.reply({
-        content: `${interaction.user.username}'s profile does not exist, can not fight`,
+        content: `${user.username}'s profile does not exist, can not fight`,
         ephemeral: true,
       });
 
@@ -60,7 +63,7 @@ module.exports = {
     if (storedProfile.isFighting) {
       const fightEmbed = await client.createFightEmbed(
         storedProfile.monster,
-        interaction.user.username,
+        user.username,
         storedProfile
       );
 
@@ -71,35 +74,16 @@ module.exports = {
     }
 
     const selectedMonster = interaction.options.getString('monster');
-    const coin = new Item('coin', '005', 1, 1);
     let drops = [];
 
     switch (selectedMonster) {
       case 'Dummy': {
         const stickDrop = new Item('stick', '001', 0, 2);
-        drops = [stickDrop, coin]
+        drops = [stickDrop]
         const dummy = new Monster(selectedMonster, 3, 0, drops);
 
-        await Profile.findOneAndUpdate(
-          { _id: storedProfile._id },
-          { monster: dummy }
-        );
-
-        storedProfile = await Profile.findOne({
-          userId: interaction.user.id,
-          guildId: interaction.guild.id,
-        });
-
-        const dummyEmbed = await client.createFightEmbed(
-          storedProfile.monster,
-          interaction.user.username,
-          storedProfile
-        );
-
-        return interaction.reply({
-          embeds: [dummyEmbed],
-          components: [row],
-        });
+        client.fightMonster(interaction, dummy, row);
+        break;
       }
 
       case 'Slime': {
@@ -107,26 +91,8 @@ module.exports = {
         drops = [slimeDrop];
         const slime = new Monster(selectedMonster, 10, 1, drops);
 
-        await Profile.findOneAndUpdate(
-          { _id: storedProfile._id },
-          { monster: slime }
-        );
-
-        storedProfile = await Profile.findOne({
-          userId: interaction.user.id,
-          guildId: interaction.guild.id,
-        });
-
-        const slimeEmbed = await client.createFightEmbed(
-          storedProfile.monster,
-          interaction.user.username,
-          storedProfile
-        );
-
-        return interaction.reply({
-          embeds: [slimeEmbed],
-          components: [row],
-        });
+        client.fightMonster(interaction, slime, row);
+        break;
       }
 
       case 'Horned Rabbit': {
@@ -134,26 +100,8 @@ module.exports = {
         drops = [hornDrop];
         const hornedRabbit = new Monster(selectedMonster, 8, 2, drops);
 
-        await Profile.findOneAndUpdate(
-          { _id: storedProfile._id },
-          { monster: hornedRabbit }
-        );
-
-        storedProfile = await Profile.findOne({
-          userId: interaction.user.id,
-          guildId: interaction.guild.id,
-        });
-
-        const hornedRabbitEmbed = await client.createFightEmbed(
-          storedProfile.monster,
-          interaction.user.username,
-          storedProfile
-        );
-
-        return interaction.reply({
-          embeds: [hornedRabbitEmbed],
-          components: [row],
-        });
+        client.fightMonster(interaction, hornedRabbit, row);
+        break;
       }
 
       case 'Ogre': {
@@ -161,30 +109,11 @@ module.exports = {
         drops = [meatDrop];
         const ogre = new Monster(selectedMonster, 20, 3, drops);
 
-        await Profile.findOneAndUpdate(
-          { _id: storedProfile._id },
-          { monster: ogre }
-        );
-
-        storedProfile = await Profile.findOne({
-          userId: interaction.user.id,
-          guildId: interaction.guild.id,
-        });
-
-        const orgeEmbed = await client.createFightEmbed(
-          storedProfile.monster,
-          interaction.user.username,
-          storedProfile
-        );
-
-        return interaction.reply({
-          embeds: [orgeEmbed],
-          components: [row],
-        });
+        client.fightMonster(interaction, ogre, row);
+        break;
       }
       default:
+        break;
     }
-
-    return null;
   },
 };

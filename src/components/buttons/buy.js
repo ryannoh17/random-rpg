@@ -7,8 +7,9 @@ module.exports = {
   },
 
   async execute(interaction) {
-    shopList[0] = `**${shopList[0]}**`
-    const shopItems = shopList.join('\n');
+    const list = [...shopList];
+    list[0] = `**${list[0]}**`
+    const shopItems = list.join('\n');
 
     const embed = EmbedBuilder.from(interaction.message.embeds[0])
         .spliceFields(0, 1, {

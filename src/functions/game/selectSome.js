@@ -4,70 +4,81 @@ const Profile = require('../../schemas/profile');
 
 module.exports = (client) => {
   client.selectSome = async (interaction, num) => {
+    // CODE DOES NOT WORK FOR LAST ITEM PLS FIX
+
     const storedProfile = await Profile.findOne({
       userId: interaction.user.id,
       guildId: interaction.guild.id,
     });
 
+    const { inventory } = storedProfile;
+
+    if (inventory.length < 1) {
+      return false;
+    }
+
     const oldEmbed = interaction.message.embeds[0];
     const { name } = oldEmbed.fields[0];
 
-    const oldItems = oldEmbed.fields[0].value;
-    const itemList = oldItems.split('\n');
+    const itemList = oldEmbed.fields[0].value.split('\n');
     const index = itemList.findIndex((item) => item.includes('*'));
-    const selectedItem = storedProfile.inventory[index];
-    const newQuantity = selectedItem.quantity - num;
-    const coinCount = storedProfile.coins + (selectedItem.price * num);
+    const selectedItem = inventory[index];
+    const { quantity } = selectedItem;
+
+    const newQuantity = quantity - num;
+    const coinCount = storedProfile.coins + selectedItem.price * num;
 
     selectedItem.quantity = newQuantity;
 
-    if (!num && newQuantity <= 0) {
+    if (!num || newQuantity <= 0) {
       num = selectedItem.quantity;
-      storedProfile.inventory.splice(index, 1);
+      inventory.splice(index, 1);
     }
 
-
-    // if (selectedItem.quantity < 0) {
-    //   selectedItem.quantity = 0;
-    // }
-
-    // storedProfile = await Profile.findOne({
-    //   userId: interaction.user.id,
-    //   guildId: interaction.guild.id,
-    // });
-
-    const nameList = storedProfile.inventory.map((items) => {
+    const nameList = inventory.map((items) => {
       if (items.quantity > 1) {
         return `${items.name} x${items.quantity}`;
       }
       return items.name;
     });
 
-    nameList[index] = `**${nameList[index]}**`; 
+    nameList[index] = `**${nameList[index]}**`;
     let newItems;
-    
-    if (nameList.length === 1) {
-        newItems = `**${nameList[0]}**`
+    let newEmbed;
+
+    if (inventory.length > 0) {
+      newItems = nameList.join('\n');
+
+      newEmbed = EmbedBuilder.from(oldEmbed)
+        .spliceFields(0, 1, {
+          name: `${name}`,
+          value: `${newItems}`,
+          inline: true,
+        })
+        .spliceFields(2, 1, {
+          name: 'Coins',
+          value: `${coinCount}`,
+          inline: true,
+        });
     } else {
-        newItems = nameList.join('\n');
+      newEmbed = EmbedBuilder.from(oldEmbed)
+        .spliceFields(0, 1, {
+          name: `${name}`,
+          value: `\u200B`,
+          inline: true,
+        })
+        .spliceFields(2, 1, {
+          name: 'Coins',
+          value: `${coinCount}`,
+          inline: true,
+        });
     }
-
-
-    const newEmbed = EmbedBuilder.from(oldEmbed).spliceFields(0, 1, {
-      name: `${name}`,
-      value: `${newItems}`,
-      inline: true,
-    }).spliceFields(2, 1, {
-      name: 'Coins',
-      value: `${coinCount}`,
-      inline: true
-    });
 
     await Profile.findOneAndUpdate(
       { _id: storedProfile._id },
       {
-        inventory: storedProfile.inventory,
-        coins: coinCount
+        inventory,
+        coins: coinCount,
       }
     );
 

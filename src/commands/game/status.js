@@ -10,18 +10,15 @@ module.exports = {
     ),
 
   async execute(interaction) {
-    const selectedUser =
-      interaction.options.getUser('target') || interaction.user;
+    const { user, guild } = interaction;
+    const selectedUser = interaction.options.getUser('target') || user;
 
     const storedProfile = await Profile.findOne({
       userId: selectedUser.id,
-      guildId: interaction.guild.id
+      guildId: guild.id,
     });
 
-    if (
-      selectedUser !== interaction.user &&
-      interaction.user.id !== '449357416287567873'
-    )
+    if (selectedUser !== user && user.id !== '449357416287567873')
       return interaction.reply({
         content: `Activation Failed, Player requires **God's Eyes**`,
         ephemeral: true,
@@ -40,7 +37,7 @@ module.exports = {
       .addFields([
         {
           name: `health`,
-          value: `${storedProfile.health}`,
+          value: `${storedProfile.health}/${storedProfile.maxHealth}`,
           inline: true,
         },
         {

@@ -7,27 +7,16 @@ module.exports = {
     .setDescription('Creates player profile'),
 
   async execute(interaction) {
-    const { user } = interaction;
+    const { user, guild } = interaction;
 
-    const storedProfile = await Profile.findOne({
-      userId: user.id,
-      guildId: interaction.guild.id,
-    });
+    const result = await Profile.updateOne(
+      { userId: user.id, guildId: guild.id },
+      { userId: user.id, tag: user.tag, guildId: guild.id },
+      { upsert: true }
+    );
 
-    if (!storedProfile) {
-      const newProfile = new Profile({
-        userId: user.id,
-        tag: user.tag,
-        guildId: interaction.guild.id,
-      });
-
-      await newProfile
-        .save()
-        .then(async (profile) => {
-          console.log(`New Profile: ${profile.tag}`);
-        })
-        .catch(console.error);
-        
+    if (result.upsertedId) {
+      console.log(`New Profile: ${result.tag}`);
       return interaction.reply({
         content: `${user.username}'s profile has been created`,
         ephemeral: true,
@@ -36,6 +25,7 @@ module.exports = {
 
     return interaction.reply({
       content: 'Player profile already exists',
+      ephemeral: true,
     });
   },
 };

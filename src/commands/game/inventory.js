@@ -6,19 +6,20 @@ module.exports = {
     .setName('inventory')
     .setDescription('brings up inventory'),
   async execute(interaction, client) {
+    const { user, guild } = interaction;
+
     const storedProfile = await Profile.findOne({
-      userId: interaction.user.id,
-      guildId: interaction.guild.id,
+      userId: user.id,
+      guildId: guild.id,
     });
 
     if (!storedProfile)
       return interaction.reply({
-        content: `${interaction.user.username}'s profile does not exist`,
+        content: `${user.username}'s profile does not exist`,
         ephemeral: true,
       });
 
-    const { inventory } = storedProfile;
-    const { coins } = storedProfile
+    const { inventory, coins } = storedProfile;
 
     const nameList = inventory.map((items) => {
       if (items.quantity > 1) {

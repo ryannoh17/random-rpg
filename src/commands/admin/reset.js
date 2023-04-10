@@ -9,24 +9,14 @@ module.exports = {
       option.setName('target').setDescription('resets selected player')
     ),
   async execute(interaction) {
-    if (interaction.user.id !== '449357416287567873')
+    const { user, guild } = interaction;
+    const selectedUser = interaction.options.getUser('target') || user;
+
+    if (user.id !== '449357416287567873')
       return interaction.reply('not an admin can not use');
 
-    const selectedUser =
-      interaction.options.getUser('target') || interaction.user;
-
-    const storedProfile = await Profile.findOne({
-      userId: selectedUser.id,
-      guildId: interaction.guild.id,
-    });
-
-    if (!storedProfile)
-      return interaction.reply({
-        content: `${selectedUser.username}'s profile does not exist, can not reset`,
-      });
-
-    await Profile.findOneAndUpdate(
-      { _id: storedProfile._id },
+    const result = await Profile.updateOne(
+      { userId: user.id, guildId: guild.id },
       {
         maxHealth: 10,
         health: 10,
@@ -41,6 +31,16 @@ module.exports = {
       }
     );
 
-    return interaction.reply(`${selectedUser.username} has been reset`);
+    if (result.modifiedCount === 1) {
+      return interaction.reply({
+        content: `${selectedUser.username} has been reset`,
+        ephemeral: true,
+      });
+    }
+
+    return interaction.reply({
+      content: `${selectedUser.username}'s profile does not exist, can not reset`,
+      ephemeral: true,
+    });
   },
 };

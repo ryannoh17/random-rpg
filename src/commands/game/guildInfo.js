@@ -2,31 +2,31 @@ const { SlashCommandBuilder } = require('discord.js');
 const Guild = require('../../schemas/guild');
 
 module.exports = {
-    data: new SlashCommandBuilder()
-        .setName('server')
-        .setDescription('Returns server info'),
+  data: new SlashCommandBuilder()
+    .setName('server')
+    .setDescription('Returns server info'),
 
-    async execute(interaction) {
-        let guildProfile = await Guild.findOne({ guildId: interaction.guild.id });
-        if (!guildProfile) {
-            guildProfile = await new Guild({
-                guildId: interaction.guild.id,
-                guildName: interaction.guild.name,
-                guildIcon: interaction.guild.iconURL() ? interaction.guild.iconURL() : 'none'
-            });
+  async execute(interaction) {
+    const { guild } = interaction;
 
-            await guildProfile.save().catch(console.error);
-            await interaction.reply({
-                content: `New Server\nServer Name: ${guildProfile.guildName}\nServer ID: ${guildProfile.guildId}`
-            });
+    let guildProfile = await Guild.findOne({ guildId: guild.id });
 
-            console.log(guildProfile);
-        } else {
-            await interaction.reply({
-                content: `Server Name: ${guildProfile.guildName}\nServer ID: ${guildProfile.guildId}`
-            });
+    if (!guildProfile) {
+      guildProfile = await new Guild({
+        guildId: guild.id,
+        guildName: guild.name,
+        guildIcon: guild.iconURL() ? guild.iconURL() : 'none',
+      });
 
-            console.log(guildProfile);
-        }
+      await guildProfile.save().catch(console.error);
+      await interaction.reply({
+        content: `New Server\nServer Name: ${guildProfile.guildName}\nServer ID: ${guildProfile.guildId}`,
+      });
+      
+    } else {
+      await interaction.reply({
+        content: `Server Name: ${guildProfile.guildName}\nServer ID: ${guildProfile.guildId}`,
+      });
     }
-}
+  },
+};

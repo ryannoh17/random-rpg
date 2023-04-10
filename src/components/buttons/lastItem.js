@@ -1,5 +1,4 @@
 const { EmbedBuilder } = require('discord.js');
-// const Profile = require('../../schemas/profile');
 
 module.exports = {
   data: {
@@ -8,13 +7,14 @@ module.exports = {
 
   async execute(interaction) {
     const oldEmbed = interaction.message.embeds[0];
-    const items = oldEmbed.fields[0].value;
-    const { name } = oldEmbed.fields[0];
+    const { name, value: items } = oldEmbed.fields[0];
     const itemList = items.split('\n');
 
     let index = itemList.findIndex((item) => item.includes('*'));
 
-    itemList[index] = itemList[index].replaceAll('*', '');
+    if (index === -1) return; 
+
+    itemList[index] = itemList[index].replace(/\*/g, '');
     index -= 1;
 
     if (!itemList[index]) index = itemList.length - 1;
@@ -22,9 +22,7 @@ module.exports = {
     itemList[index] = `**${itemList[index]}**`;
     const newItems = itemList.join('\n');
 
-    const newEmbed = EmbedBuilder.from(
-      interaction.message.embeds[0]
-    ).spliceFields(0, 1, {
+    const newEmbed = EmbedBuilder.from(oldEmbed).spliceFields(0, 1, {
       name: `${name}`,
       value: `${newItems}`,
       inline: true,
