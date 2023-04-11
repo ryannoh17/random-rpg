@@ -28,8 +28,49 @@ module.exports = {
       health: monsterHealth,
     } = monster;
 
-    // --- WHEN PLAYER DIES ---
-    if (playerHealth <= 0) {
+    const row = message.components[0];
+    const newAttackButton = ButtonBuilder.from(button).setDisabled(true);
+    const attackButton = ButtonBuilder.from(button).setDisabled(false);
+
+    // --- WHEN MONSTER DIES ---
+    if (monsterHealth <= 0) {
+      const newExp = storedProfile.exp + 30;
+      monster.health = monsterMaxHealth;
+
+      client.addItem(storedProfile.inventory, monster.drops, dbId);
+
+      await Profile.findByIdAndUpdate(
+        { _id: dbId },
+        {
+          exp: newExp,
+          isFighting: false,
+          monster,
+        }
+      );
+
+      await client.checkExp(user.id, guild.id);
+
+      row.components[0] = newAttackButton;
+
+      const newEmbed = EmbedBuilder.from(oldEmbed)
+        .spliceFields(1, 1, {
+          name: `${monsterName}`,
+          value: `0/${monsterMaxHealth}`,
+          inline: true,
+        })
+
+        .spliceFields(4, 1, {
+          name: `\u200B`,
+          value: `${monsterName} has been killed`,
+        });
+
+      await interaction.update({
+        embeds: [newEmbed],
+        components: [row],
+      });
+
+      // --- WHEN PLAYER DIES ---
+    } else if (playerHealth <= 0) {
       await Profile.findByIdAndUpdate(
         { _id: dbId },
         {
@@ -45,16 +86,21 @@ module.exports = {
         }
       );
 
-      const newAttackButton = ButtonBuilder.from(button).setDisabled(true);
-      const row = message.components[0];
+      const newNextButton = ButtonBuilder.from(row.components[2]).setDisabled(
+        true
+      );
+      row.components[2] = newNextButton;
       row.components[0] = newAttackButton;
 
-      const newEmbed = EmbedBuilder.from(oldEmbed)
+      const playerHit = EmbedBuilder.from(oldEmbed)
         .spliceFields(1, 1, {
           name: `${monsterName}`,
           value: `${monsterHealth}/${monsterMaxHealth}`,
           inline: true,
         })
+        
+
+      const monsterHit = EmbedBuilder.from(playerHit)
         .spliceFields(3, 1, {
           name: user.username,
           value: `0/${playerMaxHealth}`,
@@ -65,79 +111,59 @@ module.exports = {
           value: `${user.username} has been killed`,
         });
 
-      await interaction.update({
-        embeds: [newEmbed],
-        components: [row],
+      await interaction
+        .update({
+          embeds: [playerHit],
+          components: [row],
+        })
+        .then(() => {
+          setTimeout(() => {
+            interaction.editReply({
+              embeds: [monsterHit],
+            });
+          }, 750);
+        });
+
+      // --- DEFAULT ---
+    } else {
+      const playerHit = EmbedBuilder.from(oldEmbed).spliceFields(1, 1, {
+        name: `${monsterName}`,
+        value: `${monsterHealth}/${monsterMaxHealth}`,
+        inline: true,
       });
 
-      // --- WHEN MONSTER DIES ---
-    } else if (monsterHealth <= 0) {
-      const newExp = storedProfile.exp + 30;
+      const monsterHit = EmbedBuilder.from(playerHit).spliceFields(3, 1, {
+        name: user.username,
+        value: `${playerHealth}/${playerMaxHealth}`,
+        inline: true,
+      });
 
-      client.addItem(storedProfile.inventory, monster.drops, dbId);
+      row.components[0] = newAttackButton;
+
+      await interaction
+        .update({
+          embeds: [playerHit],
+          components: [row],
+        })
+        .then(() => {
+          setTimeout(() => {
+            row.components[0] = attackButton;
+
+            interaction.editReply({
+              embeds: [monsterHit],
+              components: [row],
+            });
+          }, 750);
+        });
 
       await Profile.findByIdAndUpdate(
         { _id: dbId },
         {
-          exp: newExp,
-          isFighting: false,
+          isFighting: true,
+          monster,
+          health: playerHealth,
         }
       );
-
-      await client.checkExp(user.id, guild.id);
-
-      const newButton = ButtonBuilder.from(button).setDisabled(true);
-      const row = message.components[0];
-      row.components[0] = newButton;
-
-      const newEmbed = EmbedBuilder.from(oldEmbed)
-        .spliceFields(1, 1, {
-          name: `${monsterName}`,
-          value: `0/${monsterMaxHealth}`,
-          inline: true,
-        })
-        .spliceFields(3, 1, {
-          name: user.username,
-          value: `${playerHealth}/${playerMaxHealth}`,
-          inline: true,
-        })
-        .spliceFields(4, 1, {
-          name: `\u200B`,
-          value: `${monsterName} has been killed`,
-        });
-
-      await interaction.update({
-        embeds: [newEmbed],
-        components: [row],
-      });
-
-      monster.health = monsterMaxHealth;
-
-      // --- DEFAULT ---
-    } else {
-      const newEmbed = EmbedBuilder.from(oldEmbed)
-        .spliceFields(1, 1, {
-          name: `${monsterName}`,
-          value: `${monsterHealth}/${monsterMaxHealth}`,
-          inline: true,
-        })
-        .spliceFields(3, 1, {
-          name: user.username,
-          value: `${playerHealth}/${playerMaxHealth}`,
-          inline: true,
-        });
-
-      await interaction.update({
-        embeds: [newEmbed],
-      });
     }
-
-    await Profile.findByIdAndUpdate(
-      { _id: dbId },
-      {
-        monster,
-        health: playerHealth,
-      }
-    );
   },
 };

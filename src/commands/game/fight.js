@@ -16,8 +16,9 @@ module.exports = {
       option
         .setName('monster')
         .setDescription('spawns selected monster')
-        .setRequired(true)
+        .setRequired(false)
         .addChoices(
+          // sunlit meadows, 
           { name: 'Dummy', value: 'Dummy' },
           { name: 'Slime', value: 'Slime' },
           { name: 'Horned Rabbit', value: 'Horned Rabbit' },
@@ -73,7 +74,12 @@ module.exports = {
       });
     }
 
-    const selectedMonster = interaction.options.getString('monster');
+    const selectedMonster = await interaction.options.getString('monster');
+
+    if (!selectedMonster) {
+      await client.chooseMonster(interaction, row);
+    }
+
     let drops = [];
 
     switch (selectedMonster) {
@@ -105,7 +111,7 @@ module.exports = {
       }
 
       case 'Ogre': {
-        const meatDrop = new Item('meat', '004', 2, 3);
+        const meatDrop = new Item('meat', '010', 2, 3);
         drops = [meatDrop];
         const ogre = new Monster(selectedMonster, 20, 3, drops);
 

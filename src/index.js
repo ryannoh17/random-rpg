@@ -10,6 +10,7 @@ const {
 } = require('discord.js');
 const { connect } = require('mongoose');
 const fs = require('fs');
+// const path = require('path');
 
 const { Guilds, GuildMembers, GuildMessages } = GatewayIntentBits;
 const { User, Message, GuildMember, ThreadMember } = Partials;
@@ -30,11 +31,39 @@ for (const folder of functionFolders) {
   const functionFiles = fs
     .readdirSync(`./src/functions/${folder}`)
     .filter((file) => file.endsWith('js'));
-
+    
   for (const file of functionFiles) {
     require(`./functions/${folder}/${file}`)(client);
   }
 }
+
+// function readFunctionsDir(dir) {
+//   const files = fs.readdirSync(dir);
+//   for (const file of files) {
+//     const filePath = path.join(dir, file);
+//     if (fs.statSync(filePath).isDirectory()) {
+//       readFunctionsDir(filePath);
+//     } else if (file.endsWith('.js')) {
+//       require(filePath)(client);
+//     }
+//   }
+// }
+
+// readFunctionsDir('./src/functions');
+
+// function readFunctionsDir(dir) {
+//   const files = fs.readdirSync(dir);
+//   for (const file of files) {
+//     const filePath = `${dir}/${file}`;
+//     if (fs.statSync(filePath).isDirectory()) {
+//       readFunctionsDir(filePath);
+//     } else if (file.endsWith('.js')) {
+//       require(filePath)(client);
+//     }
+//   }
+// }
+
+// readFunctionsDir('./src/functions');
 
 client.commandHandler();
 client.eventHandler();
