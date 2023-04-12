@@ -18,10 +18,10 @@ module.exports = {
         .setDescription('spawns selected monster')
         .setRequired(false)
         .addChoices(
-          // sunlit meadows, 
-          { name: 'Dummy', value: 'Dummy' },
-          { name: 'Slime', value: 'Slime' },
-          { name: 'Horned Rabbit', value: 'Horned Rabbit' },
+          // sunlit meadows, greenwood, Phantom Caves
+          { name: 'dummy', value: 'dummy' },
+          { name: 'Sunlit Meadows', value: 'SLM' },
+          { name: 'Greenwood', value: 'GNW' },
           { name: 'Ogre', value: 'Ogre' }
         )
     ),
