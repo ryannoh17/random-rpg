@@ -1,17 +1,51 @@
-// const { ButtonBuilder } = require('discord.js');
-// const Profile = require('../../schemas/profile');
+const { ButtonBuilder } = require("discord.js");
+const Profile = require("../../schemas/profile");
 
 module.exports = {
   data: {
-    name: 'nextBattle',
+    name: "nextBattle",
   },
 
   async execute(interaction, client) {
     const { message } = interaction;
-    const { commands } = client;
     const { title } = message.embeds[0];
-    const command = await commands.find(cmd => cmd.data.name === 'fight');
-    command.execute(interaction, client, title);
+    const { user, guild } = interaction;
+    let monster;
+
+    switch (title) {
+      case "Sunlit Meadows": {
+        monster = await client.fromSLM();
+        break;
+      }
+      case "Greenwood": {
+        monster = await client.fromGNW();
+        break;
+      }
+    }
+
+    const storedProfile = await Profile.findOneAndUpdate(
+      { userId: user.id, guildId: guild.id },
+      { monster },
+      { new: true }
+    );
+
+    const monsterEmbed = await client.createFightEmbed(
+      monster,
+      user.username,
+      storedProfile,
+      title
+    );
+
+    const row = message.components[0];
+    const newAttackButton = ButtonBuilder.from(row.components[0]).setDisabled(
+      false
+    );
+    row.components[0] = newAttackButton;
+
+    return interaction.update({
+      embeds: [monsterEmbed],
+      components: [row],
+    });
     // const { user, guild, message } = interaction;
 
     // const storedProfile = await Profile.findOne({

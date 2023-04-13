@@ -19,7 +19,7 @@ module.exports = {
         .setRequired(true)
         .addChoices(
           // sunlit meadows, greenwood, Phantom Caves
-          { name: 'dummy', value: 'dummy' },
+          { name: 'Dummy', value: 'Dummy' },
           { name: 'Sunlit Meadows', value: 'Sunlit Meadows' },
           { name: 'Greenwood', value: 'Greenwood' },
         )
@@ -74,24 +74,25 @@ module.exports = {
     }
 
     const selectedArea = title || await interaction.options.getString('area');
-    console.log(title, selectedArea);
 
     switch (selectedArea) {
       case 'Dummy': {
         const drops = [itemArray[0]];
         const dummy = new Monster('Dummy', 30, 0, drops);
 
-        await client.fightMonster(interaction, dummy, row);
+        await client.fightMonster(interaction, dummy, row, selectedArea);
         break;
       }
 
       case 'Sunlit Meadows': {
-        await client.fromSLM(interaction, row, selectedArea);
+        const monster = await client.fromSLM();
+        await client.fightMonster(interaction, monster, row, selectedArea);
         break;
       }
 
       case 'Greenwood': {
-        await client.fromGNW(interaction, row, selectedArea);
+        const monster = await client.fromGNW();
+        await client.fightMonster(interaction, monster, row, selectedArea);
         break;
       }
 

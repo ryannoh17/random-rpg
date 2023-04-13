@@ -3,7 +3,7 @@ const { itemArray } = require('../../items');
 
 module.exports = (client) => {
   // eslint-disable-next-line no-param-reassign
-  client.fromGNW = async (interaction, row, area) => {
+  client.fromGNW = async () => {
     const int = Math.floor(Math.random() * 100);
 
     let drops = [];
@@ -13,24 +13,21 @@ module.exports = (client) => {
         drops = [itemArray[5]];
         const goblin = new Monster('Goblin', 100, 20, drops);
 
-        client.fightMonster(interaction, goblin, row, area);
-        break;
+        return goblin;
       }
 
       case int < 79: {
         drops = [itemArray[3]];
         const direWolf = new Monster('Dire Wolf', 150, 30, drops);
 
-        client.fightMonster(interaction, direWolf, row, area);
-        break;
+        return direWolf;
       }
 
       case int < 99: {
         drops = [itemArray[6]]; 
-        const ogre = new Monster('Dire Wolf', 200, 40, drops);
+        const ogre = new Monster('Ogre', 200, 40, drops);
 
-        client.fightMonster(interaction, ogre, row, area);
-        break;
+        return ogre;
       }
       
       default:
