@@ -1,38 +1,35 @@
 const Monster = require('../../classes/monster');
-const Item = require('../../classes/item');
+const { itemArray } = require('../../items');
 
 module.exports = (client) => {
   // eslint-disable-next-line no-param-reassign
-  client.fromSLM = async (interaction, row) => {
+  client.fromSLM = async (interaction, row, area) => {
     const int = Math.floor(Math.random() * 100);
 
     let drops = [];
 
     switch (true) {
       case int < 39: {
-        const slimeDrop = new Item('slime', '002', 1, 2);
-        drops = [slimeDrop];
-        const slime = new Monster('Slime', 10, 1, drops);
+        drops = [itemArray[1]];
+        const slime = new Monster('Slime', 60, 5, drops);
 
-        client.fightMonster(interaction, slime, row);
+        client.fightMonster(interaction, slime, row, area);
         break;
       }
 
       case int < 79: {
-        const rabbitHornDrop = new Item('rabbit horn', '003', 4, 1);
-        drops = [rabbitHornDrop];
-        const hornedRabbit = new Monster('Horned Rabbit', 8, 2, drops);
+        drops = [itemArray[2]];
+        const hornedRabbit = new Monster('Horned Rabbit', 50, 15, drops);
 
-        client.fightMonster(interaction, hornedRabbit, row);
+        client.fightMonster(interaction, hornedRabbit, row, area);
         break;
       }
 
       case int < 99: {
-        const boarTusk = new Item('boar', '004', 2, 3);
-        drops = [boarTusk];
-        const wildtusk = new Monster('Wildtust', 15, 2, drops);
+        drops = [itemArray[4]];
+        const wildtusk = new Monster('Wildtusk', 110, 20, drops);
 
-        client.fightMonster(interaction, wildtusk, row);
+        client.fightMonster(interaction, wildtusk, row, area);
         break;
       }
       

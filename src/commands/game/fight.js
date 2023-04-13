@@ -6,7 +6,7 @@ const {
 } = require('discord.js');
 const Profile = require('../../schemas/profile');
 const Monster = require('../../classes/monster');
-const Item = require('../../classes/item');
+const { itemArray } = require('../../items');
 
 module.exports = {
   data: new SlashCommandBuilder()
@@ -14,19 +14,18 @@ module.exports = {
     .setDescription('Fight!')
     .addStringOption((option) =>
       option
-        .setName('monster')
-        .setDescription('spawns selected monster')
-        .setRequired(false)
+        .setName('area')
+        .setDescription('enter selected area')
+        .setRequired(true)
         .addChoices(
           // sunlit meadows, greenwood, Phantom Caves
           { name: 'dummy', value: 'dummy' },
-          { name: 'Sunlit Meadows', value: 'SLM' },
-          { name: 'Greenwood', value: 'GNW' },
-          { name: 'Ogre', value: 'Ogre' }
+          { name: 'Sunlit Meadows', value: 'Sunlit Meadows' },
+          { name: 'Greenwood', value: 'Greenwood' },
         )
     ),
   // eslint-disable-next-line consistent-return
-  async execute(interaction, client) {
+  async execute(interaction, client, title) {
     const { user, guild } = interaction;
 
     const storedProfile = await Profile.findOne({
@@ -74,50 +73,28 @@ module.exports = {
       });
     }
 
-    const selectedMonster = await interaction.options.getString('monster');
+    const selectedArea = title || await interaction.options.getString('area');
+    console.log(title, selectedArea);
 
-    if (!selectedMonster) {
-      await client.chooseMonster(interaction, row);
-    }
-
-    let drops = [];
-
-    switch (selectedMonster) {
+    switch (selectedArea) {
       case 'Dummy': {
-        const stickDrop = new Item('stick', '001', 0, 2);
-        drops = [stickDrop]
-        const dummy = new Monster(selectedMonster, 3, 0, drops);
+        const drops = [itemArray[0]];
+        const dummy = new Monster('Dummy', 30, 0, drops);
 
-        client.fightMonster(interaction, dummy, row);
+        await client.fightMonster(interaction, dummy, row);
         break;
       }
 
-      case 'Slime': {
-        const slimeDrop = new Item('slime', '002', 1, 1);
-        drops = [slimeDrop];
-        const slime = new Monster(selectedMonster, 10, 1, drops);
-
-        client.fightMonster(interaction, slime, row);
+      case 'Sunlit Meadows': {
+        await client.fromSLM(interaction, row, selectedArea);
         break;
       }
 
-      case 'Horned Rabbit': {
-        const hornDrop = new Item('horn', '003', 4, 1);
-        drops = [hornDrop];
-        const hornedRabbit = new Monster(selectedMonster, 8, 2, drops);
-
-        client.fightMonster(interaction, hornedRabbit, row);
+      case 'Greenwood': {
+        await client.fromGNW(interaction, row, selectedArea);
         break;
       }
 
-      case 'Ogre': {
-        const meatDrop = new Item('meat', '010', 2, 3);
-        drops = [meatDrop];
-        const ogre = new Monster(selectedMonster, 20, 3, drops);
-
-        client.fightMonster(interaction, ogre, row);
-        break;
-      }
       default:
         break;
     }

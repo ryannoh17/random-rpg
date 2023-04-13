@@ -74,9 +74,9 @@ module.exports = {
       await Profile.findByIdAndUpdate(
         { _id: dbId },
         {
-          maxHealth: 10,
-          health: 10,
-          attack: 2,
+          maxHealth: 100,
+          health: 100,
+          attack: 20,
           level: 1,
           exp: 0,
           maxExp: 100,

@@ -2,9 +2,9 @@ const { EmbedBuilder } = require('discord.js');
 
 module.exports = (client) => {
   // eslint-disable-next-line no-param-reassign
-  client.createFightEmbed = async (monster, playerName, player) => {
+  client.createFightEmbed = async (monster, playerName, player, area) => {
     const embed = new EmbedBuilder()
-      .setTitle(`Battle`)
+      .setTitle(`${area}`)
       .setThumbnail('https://i.stack.imgur.com/Fzh0w.png')
       // .setImage('https://i.stack.imgur.com/Fzh0w.png')
       .addFields([
