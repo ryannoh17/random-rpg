@@ -12,7 +12,7 @@ const profileScehma = new Schema({
   maxExp: { type: Number, default: 100 },
   monster: Object,
   isFighting: { type: Boolean, default: false },
-  inventory: { type: Array, default: [] },
+  inventory: { type: Array, default: [[],[],[]] },
   coins: { type: Number, default: 0 }
 });
 

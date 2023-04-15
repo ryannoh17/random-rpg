@@ -31,7 +31,7 @@ module.exports = (client) => {
       }
       
       default:
-        break;
+        return null;
     }
   };
 };

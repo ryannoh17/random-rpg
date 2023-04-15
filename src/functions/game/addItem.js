@@ -3,9 +3,14 @@ const Profile = require('../../schemas/profile');
 
 module.exports = (client) => {
   // eslint-disable-next-line consistent-return
-  client.addItem = async (inventory, addedItem, profileId) => {
-    if (inventory.length === 0) {
-      inventory = addedItem;
+  client.addItem = async (inventory, invIndex, addedItem, profileId) => {
+    // console.time('newItem');
+    if (addedItem.length === 0) return;
+
+    const invSeg = inventory[invIndex];
+
+    if (invSeg.length === 0) {
+      inventory[invIndex] = addedItem;
 
       await Profile.findByIdAndUpdate(
         { _id: profileId },
@@ -13,19 +18,21 @@ module.exports = (client) => {
           inventory,
         }
       );
-
+      // console.timeEnd('newItem');
       return;
     }
 
-    const newInv = inventory.map((items) => items.id);
+    console.time('addItem');
+    const newInv = invSeg.map((items) => items.id);
 
     for (let i = 0; i < addedItem.length; i++) {
-      if (newInv.includes(addedItem[i].id)) {
-        const index = newInv.indexOf(addedItem[i].id);
+      const selectedItem = addedItem[i];
+      if (newInv.includes(selectedItem.id)) {
+        const index = newInv.indexOf(selectedItem.id);
 
-        inventory[index].quantity += addedItem[i].quantity;
+        inventory[invIndex][index].quantity += selectedItem.quantity;
       } else {
-        inventory = inventory.concat(addedItem[i]);
+        inventory[invIndex] = inventory[invIndex].concat(selectedItem);
       }
     }
 
@@ -35,5 +42,6 @@ module.exports = (client) => {
         inventory,
       }
     );
+    console.timeEnd('addItem');
   };
 };

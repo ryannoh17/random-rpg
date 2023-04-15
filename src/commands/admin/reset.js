@@ -26,7 +26,7 @@ module.exports = {
         maxExp: 100,
         monster: null,
         isFighting: false,
-        inventory: [],
+        inventory: [[],[],[]],
         coins: 0,
       }
     );

@@ -2,6 +2,7 @@ const itemArray = [
   {
     name: 'stick',
     id: 0,
+    type: 'material',
     price: 0,
     quantity: 1,
     description: '',
@@ -9,6 +10,7 @@ const itemArray = [
   {
     name: 'slime',
     id: 1,
+    type: 'material',
     price: 1,
     quantity: 1,
     description: '',
@@ -16,6 +18,7 @@ const itemArray = [
   {
     name: 'rabbit horn',
     id: 2,
+    type: 'material',
     price: 3,
     quantity: 1,
     description: '',
@@ -23,6 +26,7 @@ const itemArray = [
   {
     name: 'wolf fur',
     id: 3,
+    type: 'material',
     price: 2,
     quantity: 1,
     description: '',
@@ -30,6 +34,7 @@ const itemArray = [
   {
     name: 'boar tusk',
     id: 4,
+    type: 'material',
     price: 4,
     quantity: 1,
     description: '',
@@ -37,6 +42,7 @@ const itemArray = [
   {
     name: 'goblin ear',
     id: 5,
+    type: 'material',
     price: 3,
     quantity: 1,
     description: '',
@@ -44,27 +50,31 @@ const itemArray = [
   {
     name: 'big stick',
     id: 6,
+    type: 'equipment',
     price: 0,
     quantity: 1,
     description: '',
   },
   {
-    name: 'stick',
+    name: 'healing potion',
     id: 7,
+    type: 'potion',
     price: 0,
     quantity: 1,
     description: '',
   },
   {
-    name: 'stick',
+    name: 'greater healing potion',
     id: 8,
+    type: 'potion',
     price: 0,
     quantity: 1,
     description: '',
   },
   {
-    name: 'stick',
+    name: 'd',
     id: 9,
+    type: 'material',
     price: 0,
     quantity: 1,
     description: '',

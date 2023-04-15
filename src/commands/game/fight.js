@@ -21,7 +21,7 @@ module.exports = {
           // sunlit meadows, greenwood, Phantom Caves
           { name: 'Dummy', value: 'Dummy' },
           { name: 'Sunlit Meadows', value: 'Sunlit Meadows' },
-          { name: 'Greenwood', value: 'Greenwood' },
+          { name: 'Greenwood', value: 'Greenwood' }
         )
     ),
   // eslint-disable-next-line consistent-return
@@ -73,12 +73,21 @@ module.exports = {
       });
     }
 
-    const selectedArea = title || await interaction.options.getString('area');
+    const selectedArea = title || (await interaction.options.getString('area'));
 
     switch (selectedArea) {
       case 'Dummy': {
         const drops = [itemArray[0]];
         const dummy = new Monster('Dummy', 30, 0, drops);
+
+        await Profile.findByIdAndUpdate(
+          {
+            _id: storedProfile._id,
+          },
+          {
+            monster: dummy,
+          }
+        );
 
         await client.fightMonster(interaction, dummy, row, selectedArea);
         break;

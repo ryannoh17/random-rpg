@@ -13,7 +13,7 @@ module.exports = {
     let monster;
 
     switch (title) {
-      case "Sunlit Meadows": {
+      case 'Sunlit Meadows': {
         monster = await client.fromSLM();
         break;
       }
@@ -21,13 +21,18 @@ module.exports = {
         monster = await client.fromGNW();
         break;
       }
+      default:
+        break;
     }
 
     const storedProfile = await Profile.findOneAndUpdate(
       { userId: user.id, guildId: guild.id },
       { monster },
-      { new: true }
     );
+
+    if (storedProfile.monster.name === 'Dummy') {
+      monster = storedProfile.monster;
+    }
 
     const monsterEmbed = await client.createFightEmbed(
       monster,

@@ -21,15 +21,30 @@ module.exports = {
 
     const { inventory, coins } = storedProfile;
 
-    const nameList = inventory.map((items) => {
+    const matArray = inventory[0].map((items) => {
+      if (items.quantity > 1) {
+        return `${items.name} x${items.quantity}`;
+      }
+      return items.name;
+    });
+    const potionArray = inventory[1].map((items) => {
+      if (items.quantity > 1) {
+        return `${items.name} x${items.quantity}`;
+      }
+      return items.name;
+    });
+    const equipArray = inventory[2].map((items) => {
       if (items.quantity > 1) {
         return `${items.name} x${items.quantity}`;
       }
       return items.name;
     });
 
-    const items = nameList.join('\n');
-    const embed = await client.createInvEmbed(inventory, items, coins);
+    const matList = matArray.join('\n');
+    const potionList = potionArray.join('\n');
+    const equipList = equipArray.join('\n');
+
+    const embed = await client.createInvEmbed(inventory, matList, potionList, equipList, coins);
 
     return interaction.reply({
       embeds: [embed],

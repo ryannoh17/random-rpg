@@ -7,6 +7,7 @@ module.exports = {
   },
 
   async execute(interaction, client) {
+    console.time('attack');
     const { user, guild, message, component: button } = interaction;
 
     const storedProfile = await Profile.findOne({
@@ -37,7 +38,7 @@ module.exports = {
       const newExp = storedProfile.exp + 30;
       monster.health = monsterMaxHealth;
 
-      client.addItem(storedProfile.inventory, monster.drops, dbId);
+      await client.addToInv(storedProfile.inventory, monster.drops, dbId);
 
       await Profile.findByIdAndUpdate(
         { _id: dbId },
@@ -82,7 +83,7 @@ module.exports = {
           maxExp: 100,
           monster: null,
           isFighting: false,
-          inventory: [],
+          inventory: [[],[],[]],
         }
       );
 
@@ -165,5 +166,6 @@ module.exports = {
         }
       );
     }
+    console.timeEnd('attack');
   },
 };
