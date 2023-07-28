@@ -1,4 +1,4 @@
-const Profile = require('../../schemas/profile');
+const Profile = require('../../../schemas/profile');
 
 module.exports = (client) => {
   // eslint-disable-next-line no-param-reassign

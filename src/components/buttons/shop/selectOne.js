@@ -7,6 +7,7 @@ module.exports = {
     const embed = await client.selectSome(interaction, 1);
 
     if (!embed) {
+      await interaction.deferUpdate();
       return;
     }
 

@@ -2,13 +2,7 @@ const { EmbedBuilder } = require('discord.js');
 
 module.exports = (client) => {
   // eslint-disable-next-line no-param-reassign
-  client.createInvEmbed = async (
-    inventory,
-    matList,
-    potionList,
-    equipList,
-    coins
-  ) => {
+  client.createInvEmbed = async (inventory, invSections, coins) => {
     const coinAmt = coins || '0';
 
     const embed = new EmbedBuilder()
@@ -39,21 +33,21 @@ module.exports = (client) => {
     if (inventory[0].length > 0) {
       embed.spliceFields(1, 1, {
         name: 'Materials',
-        value: `${matList}`,
+        value: `${invSections[0]}`,
         inline: true,
       });
     }
     if (inventory[1].length > 0) {
       embed.spliceFields(2, 1, {
         name: 'Materials',
-        value: `${potionList}`,
+        value: `${invSections[1]}`,
         inline: true,
       });
     }
     if (inventory[2].length > 0) {
       embed.spliceFields(3, 1, {
         name: 'Equipment',
-        value: `${equipList}`,
+        value: `${invSections[2]}`,
         inline: true,
       });
     }

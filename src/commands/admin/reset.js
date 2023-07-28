@@ -16,11 +16,11 @@ module.exports = {
       return interaction.reply('not an admin can not use');
 
     const result = await Profile.updateOne(
-      { userId: user.id, guildId: guild.id },
+      { userId: selectedUser.id, guildId: guild.id },
       {
-        maxHealth: 10,
-        health: 10,
-        attack: 2,
+        maxHealth: 100,
+        health: 100,
+        attack: 20,
         level: 1,
         exp: 0,
         maxExp: 100,

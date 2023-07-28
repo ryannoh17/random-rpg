@@ -4,7 +4,6 @@ const Profile = require('../../schemas/profile');
 module.exports = (client) => {
   // eslint-disable-next-line consistent-return
   client.addItem = async (inventory, invIndex, addedItem, profileId) => {
-    // console.time('newItem');
     if (addedItem.length === 0) return;
 
     const invSeg = inventory[invIndex];
@@ -18,11 +17,9 @@ module.exports = (client) => {
           inventory,
         }
       );
-      // console.timeEnd('newItem');
       return;
     }
 
-    console.time('addItem');
     const newInv = invSeg.map((items) => items.id);
 
     for (let i = 0; i < addedItem.length; i++) {
@@ -42,6 +39,5 @@ module.exports = (client) => {
         inventory,
       }
     );
-    console.timeEnd('addItem');
   };
 };

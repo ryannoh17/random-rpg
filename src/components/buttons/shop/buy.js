@@ -1,5 +1,5 @@
 const { EmbedBuilder, ButtonBuilder, ButtonStyle, ActionRowBuilder } = require('discord.js');
-const { shopList } = require('../../commands/game/shop')
+const { shopList } = require('../../../commands/game/shop')
 
 module.exports = {
   data: {
@@ -13,7 +13,7 @@ module.exports = {
 
     const embed = EmbedBuilder.from(interaction.message.embeds[0])
         .spliceFields(0, 1, {
-            name: 'Items',
+            name: '__Items__',
             value: `${shopItems}`
         })
 

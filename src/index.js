@@ -9,7 +9,8 @@ const {
   Collection,
 } = require('discord.js');
 const { connect } = require('mongoose');
-const fs = require('fs');
+const { glob } = require('glob');
+// const fs = require('fs');
 // const path = require('path');
 
 const { Guilds, GuildMembers, GuildMessages } = GatewayIntentBits;
@@ -20,50 +21,37 @@ const client = new Client({
   Partials: [User, Message, GuildMember, ThreadMember],
 });
 
+require('./functions/handlers/commandHandler')(client);
+require('./functions/handlers/componentHandler')(client);
+require('./functions/handlers/eventHandler')(client);
+
 client.commands = new Collection();
 client.buttons = new Collection();
 client.cooldowns = new Collection();
 client.inventory = new Collection();
 client.commandArray = [];
 
-const functionFolders = fs.readdirSync(`./src/functions`);
-for (const folder of functionFolders) {
-  const functionFiles = fs
-    .readdirSync(`./src/functions/${folder}`)
-    .filter((file) => file.endsWith('js'));
-    
-  for (const file of functionFiles) {
-    require(`./functions/${folder}/${file}`)(client);
+async function doGlob() {
+  const functionFiles = await glob(`src/functions/**/*.js`);
+
+  for (const file of functionFiles){
+    const realPath = file.replace('src', '.');
+    require(realPath)(client);
   }
 }
 
-// function readFunctionsDir(dir) {
-//   const files = fs.readdirSync(dir);
-//   for (const file of files) {
-//     const filePath = path.join(dir, file);
-//     if (fs.statSync(filePath).isDirectory()) {
-//       readFunctionsDir(filePath);
-//     } else if (file.endsWith('.js')) {
-//       require(filePath)(client);
-//     }
+doGlob();
+
+// const functionFolders = fs.readdirSync(`./src/functions`);
+// for (const folder of functionFolders) {
+//   const functionFiles = fs
+//     .readdirSync(`./src/functions/${folder}`)
+//     .filter((file) => file.endsWith('js'));
+//   for (const file of functionFiles) {
+//     console.log(`./functions/${folder}/${file}`);
+//     require(`./functions/${folder}/${file}`)(client);
 //   }
 // }
-
-// readFunctionsDir('./src/functions');
-
-// function readFunctionsDir(dir) {
-//   const files = fs.readdirSync(dir);
-//   for (const file of files) {
-//     const filePath = `${dir}/${file}`;
-//     if (fs.statSync(filePath).isDirectory()) {
-//       readFunctionsDir(filePath);
-//     } else if (file.endsWith('.js')) {
-//       require(filePath)(client);
-//     }
-//   }
-// }
-
-// readFunctionsDir('./src/functions');
 
 client.commandHandler();
 client.eventHandler();

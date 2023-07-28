@@ -7,7 +7,6 @@ module.exports = {
   },
 
   async execute(interaction, client) {
-    console.time('attack');
     const { user, guild, message, component: button } = interaction;
 
     const storedProfile = await Profile.findOne({
@@ -39,16 +38,7 @@ module.exports = {
       monster.health = monsterMaxHealth;
 
       await client.addToInv(storedProfile.inventory, monster.drops, dbId);
-
-      await Profile.findByIdAndUpdate(
-        { _id: dbId },
-        {
-          exp: newExp,
-          isFighting: false,
-          monster,
-        }
-      );
-
+      // maybe change this later since updating db twice is bad
       await client.checkExp(user.id, guild.id);
 
       row.components[0] = newAttackButton;
@@ -70,36 +60,27 @@ module.exports = {
         components: [row],
       });
 
-      // --- WHEN PLAYER DIES ---
-    } else if (playerHealth <= 0) {
       await Profile.findByIdAndUpdate(
         { _id: dbId },
         {
-          maxHealth: 100,
-          health: 100,
-          attack: 20,
-          level: 1,
-          exp: 0,
-          maxExp: 100,
-          monster: null,
+          exp: newExp,
           isFighting: false,
-          inventory: [[],[],[]],
+          monster,
         }
       );
-
+      // --- WHEN PLAYER DIES ---
+    } else if (playerHealth <= 0) {
       const newNextButton = ButtonBuilder.from(row.components[2]).setDisabled(
         true
       );
       row.components[2] = newNextButton;
       row.components[0] = newAttackButton;
 
-      const playerHit = EmbedBuilder.from(oldEmbed)
-        .spliceFields(1, 1, {
-          name: `${monsterName}`,
-          value: `${monsterHealth}/${monsterMaxHealth}`,
-          inline: true,
-        })
-        
+      const playerHit = EmbedBuilder.from(oldEmbed).spliceFields(1, 1, {
+        name: `${monsterName}`,
+        value: `${monsterHealth}/${monsterMaxHealth}`,
+        inline: true,
+      });
 
       const monsterHit = EmbedBuilder.from(playerHit)
         .spliceFields(3, 1, {
@@ -125,6 +106,20 @@ module.exports = {
           }, 750);
         });
 
+      await Profile.findByIdAndUpdate(
+        { _id: dbId },
+        {
+          maxHealth: 100,
+          health: 100,
+          attack: 20,
+          level: 1,
+          exp: 0,
+          maxExp: 100,
+          monster: null,
+          isFighting: false,
+          inventory: [[], [], []],
+        }
+      );
       // --- DEFAULT ---
     } else {
       const playerHit = EmbedBuilder.from(oldEmbed).spliceFields(1, 1, {
@@ -166,6 +161,5 @@ module.exports = {
         }
       );
     }
-    console.timeEnd('attack');
   },
 };

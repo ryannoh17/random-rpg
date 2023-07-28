@@ -1,5 +1,5 @@
 const { ButtonBuilder, ButtonStyle, ActionRowBuilder } = require('discord.js');
-const Profile = require('../../schemas/profile');
+const Profile = require('../../../schemas/profile');
 
 module.exports = {
   data: {
@@ -14,32 +14,21 @@ module.exports = {
       guildId: guild.id,
     });
 
-    const nameList = storedProfile.inventory.map((items) => {
-      if (items.quantity > 1) {
-        return `${items.name} x${items.quantity}`;
-      }
-      return items.name;
-    });
-    
-    nameList[0] = `**${nameList[0]}**`;
-    const items = nameList.join('\n');
+    const { inventory, coins } = storedProfile;
 
-    const embed = await client.createInvEmbed(
-      storedProfile.inventory,
-      items,
-      storedProfile.coins
-    );
+    const invSections = await client.giveInvSections(inventory, 0);
+    const embed = await client.createInvEmbed(inventory, invSections, coins);
+
+    embed.data.fields[1].name = `__${embed.data.fields[1].name}__`;
 
     const nextItem = new ButtonBuilder()
       .setCustomId('nextItem')
       .setLabel('➡')
       .setStyle(ButtonStyle.Primary);
-
     const lastItem = new ButtonBuilder()
       .setCustomId('lastItem')
       .setLabel('⬅')
       .setStyle(ButtonStyle.Primary);
-
     const sellOne = new ButtonBuilder()
       .setCustomId('selectOne')
       .setLabel('x1')
@@ -52,7 +41,20 @@ module.exports = {
       .setCustomId('selectAll')
       .setLabel('xAll')
       .setStyle(ButtonStyle.Primary);
-    const row = new ActionRowBuilder().addComponents(
+    const materials = new ButtonBuilder()
+      .setCustomId('selectMaterialSeg')
+      .setLabel('Materials')
+      .setStyle(ButtonStyle.Primary);
+    const potions = new ButtonBuilder()
+      .setCustomId('selectPotionSeg')
+      .setLabel('Potions')
+      .setStyle(ButtonStyle.Primary);
+    const equipment = new ButtonBuilder()
+      .setCustomId('selectEquipmentSeg')
+      .setLabel('Equipment')
+      .setStyle(ButtonStyle.Primary);
+    const rowOne = new ActionRowBuilder().addComponents(materials, potions, equipment);
+    const rowTwo = new ActionRowBuilder().addComponents(
       lastItem,
       nextItem,
       sellOne,
@@ -62,7 +64,7 @@ module.exports = {
 
     await interaction.update({
       embeds: [embed],
-      components: [row],
+      components: [rowOne, rowTwo],
     });
   },
 };

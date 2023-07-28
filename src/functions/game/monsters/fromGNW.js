@@ -1,5 +1,5 @@
-const Monster = require('../../classes/monster');
-const { itemArray } = require('../../items');
+const Monster = require('../../../classes/monster');
+const { itemArray } = require('../../../items');
 
 module.exports = (client) => {
   // eslint-disable-next-line no-param-reassign

@@ -7,7 +7,18 @@ module.exports = {
 
   async execute(interaction) {
     const oldEmbed = interaction.message.embeds[0];
-    const { name, value: items } = oldEmbed.fields[0];
+    const { fields } = oldEmbed
+    let fieldIndex;
+
+    // finds inventory section your in
+    for (let i = 0; i < fields.length; i++) {
+      if (fields[i].name.includes('__')) {
+        fieldIndex = i;
+      }
+    }
+    
+    // turns field value into array to increment * item by 1
+    const { name, value: items } = fields[fieldIndex];
     const itemList = items.split('\n');
 
     let index = itemList.findIndex((item) => item.includes('*'));
@@ -22,7 +33,7 @@ module.exports = {
     itemList[index] = `**${itemList[index]}**`;
     const newItems = itemList.join('\n');
 
-    const newEmbed = EmbedBuilder.from(oldEmbed).spliceFields(0, 1, {
+    const newEmbed = EmbedBuilder.from(oldEmbed).spliceFields(fieldIndex, 1, {
       name: `${name}`,
       value: `${newItems}`,
       inline: true,

@@ -1,0 +1,56 @@
+const { SlashCommandBuilder } = require('discord.js');
+const Profile = require('../../schemas/profile');
+const { itemArray } = require('../../items');
+
+module.exports = {
+  data: new SlashCommandBuilder()
+    .setName('give')
+    .setDescription('gives items')
+    .addStringOption((option) =>
+      option
+        .setName('item')
+        .setDescription('input an item')
+        .setRequired(true)
+    )
+    .addIntegerOption((option) =>
+      option
+        .setName('amount')
+        .setDescription('input an amount')
+        .setRequired(true)
+    ),
+
+  async execute(interaction, client) {
+    const { user, guild } = interaction;
+
+    if (user.id !== '449357416287567873')
+      return interaction.reply('not an admin can not use');
+
+    const storedProfile = await Profile.findOne({
+      userId: user.id,
+      guildId: guild.id,
+    });
+
+    const { inventory, _id } = storedProfile;
+
+    const itemName = await interaction.options.getString('item');
+    const itemAmount = await interaction.options.getInteger('amount');
+
+    const selectedItem = itemArray.find((item) => item.name === itemName);
+
+    if (!selectedItem) {
+      return interaction.reply({
+        content: `item does not exist`,
+        ephemeral: true,
+      });
+    }
+    
+    selectedItem.quantity = itemAmount;
+
+    await client.addToInv(inventory, [selectedItem], _id);
+
+    return interaction.reply({
+      content: `Item given`,
+      ephemeral: true,
+    });
+  },
+};

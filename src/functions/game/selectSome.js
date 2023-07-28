@@ -5,37 +5,55 @@ const Profile = require('../../schemas/profile');
 module.exports = (client) => {
   client.selectSome = async (interaction, num) => {
     // CODE DOES NOT WORK FOR LAST ITEM PLS FIX
+    const { user, guild, message } = interaction
 
     const storedProfile = await Profile.findOne({
-      userId: interaction.user.id,
-      guildId: interaction.guild.id,
+      userId: user.id,
+      guildId: guild.id,
     });
 
-    const { inventory } = storedProfile;
+    const { inventory, coins } = storedProfile;
 
-    if (inventory.length < 1) {
-      return false;
+    const oldEmbed = message.embeds[0];
+    const { fields } = oldEmbed;
+    let invIndex;
+
+    for (let i = 0; i < inventory.length; i++) {
+      if (fields[i].name.includes('_')) {
+        invIndex = i;
+      }
     }
 
-    const oldEmbed = interaction.message.embeds[0];
-    const { name } = oldEmbed.fields[0];
+    const { value, name } = fields[invIndex];
 
-    const itemList = oldEmbed.fields[0].value.split('\n');
-    const index = itemList.findIndex((item) => item.includes('*'));
-    const selectedItem = inventory[index];
-    const { quantity } = selectedItem;
+    if(value.length === 1) {
+      return null;
+    }
 
-    const newQuantity = quantity - num;
-    const coinCount = storedProfile.coins + selectedItem.price * num;
+    const itemList = value.split('\n');
+    let index = itemList.findIndex((item) => item.includes('*'));
+        
+    const selectedItem = inventory[invIndex - 1][index];
+    const { quantity: itemQuantity } = selectedItem;
 
-    selectedItem.quantity = newQuantity;
+    const newQuantity = itemQuantity - num;
+
+    let coinCount;
 
     if (!num || newQuantity <= 0) {
-      num = selectedItem.quantity;
-      inventory.splice(index, 1);
+      selectedItem.quantity = 0;
+      coinCount = coins + selectedItem.price * itemQuantity;
+      inventory[invIndex - 1].splice(index, 1);
+        if(index === itemList.length - 1){
+          index = itemList.length - 2;
+        }
+    } else {
+      coinCount = coins + selectedItem.price * num;
+      selectedItem.quantity = newQuantity;
     }
 
-    const nameList = inventory.map((items) => {
+    // turns invetory into list for embed
+    const nameList = inventory[invIndex - 1].map((items) => {
       if (items.quantity > 1) {
         return `${items.name} x${items.quantity}`;
       }
@@ -46,31 +64,29 @@ module.exports = (client) => {
     let newItems;
     let newEmbed;
 
-    if (inventory.length > 0) {
+    if (nameList.length > 0) {
       newItems = nameList.join('\n');
 
       newEmbed = EmbedBuilder.from(oldEmbed)
-        .spliceFields(0, 1, {
+        .spliceFields(invIndex, 1, {
           name: `${name}`,
           value: `${newItems}`,
           inline: true,
         })
-        .spliceFields(2, 1, {
+        .spliceFields(0, 1, {
           name: 'Coins',
           value: `${coinCount}`,
-          inline: true,
         });
     } else {
       newEmbed = EmbedBuilder.from(oldEmbed)
-        .spliceFields(0, 1, {
+        .spliceFields(invIndex, 1, {
           name: `${name}`,
           value: `\u200B`,
           inline: true,
         })
-        .spliceFields(2, 1, {
+        .spliceFields(0, 1, {
           name: 'Coins',
           value: `${coinCount}`,
-          inline: true,
         });
     }
 
