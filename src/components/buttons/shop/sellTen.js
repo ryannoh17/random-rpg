@@ -1,10 +1,10 @@
 module.exports = {
   data: {
-    name: 'selectOne',
+    name: 'sellTen',
   },
 
   async execute(interaction, client) {
-    const embed = await client.selectSome(interaction, 1);
+    const embed = await client.sellSome(interaction, 10);
 
     if (!embed) {
       await interaction.deferUpdate();

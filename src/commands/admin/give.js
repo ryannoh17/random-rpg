@@ -39,7 +39,7 @@ module.exports = {
 
     if (!selectedItem) {
       return interaction.reply({
-        content: `item does not exist`,
+        content: `${itemName} does not exist`,
         ephemeral: true,
       });
     }
@@ -49,7 +49,7 @@ module.exports = {
     await client.addToInv(inventory, [selectedItem], _id);
 
     return interaction.reply({
-      content: `Item given`,
+      content: `${itemAmount} ${itemName} given`,
       ephemeral: true,
     });
   },

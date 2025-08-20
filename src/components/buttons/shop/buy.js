@@ -1,5 +1,10 @@
-const { EmbedBuilder, ButtonBuilder, ButtonStyle, ActionRowBuilder } = require('discord.js');
-const { shopList } = require('../../../commands/game/shop')
+const {
+  EmbedBuilder,
+  ButtonBuilder,
+  ButtonStyle,
+  ActionRowBuilder,
+} = require('discord.js');
+const { shopList } = require('../../../commands/game/shop');
 
 module.exports = {
   data: {
@@ -8,14 +13,15 @@ module.exports = {
 
   async execute(interaction) {
     const list = [...shopList];
-    list[0] = `**${list[0]}**`
+    list[0] = `**${list[0]}**`;
     const shopItems = list.join('\n');
 
-    const embed = EmbedBuilder.from(interaction.message.embeds[0])
-        .spliceFields(0, 1, {
-            name: '__Items__',
-            value: `${shopItems}`
-        })
+    const embed = EmbedBuilder.from(interaction.message.embeds[0]).spliceFields(1, 1,
+      {
+        name: '__Items__',
+        value: `${shopItems}`,
+      }
+    );
 
     const nextItem = new ButtonBuilder()
       .setCustomId('nextItem')
@@ -27,10 +33,13 @@ module.exports = {
       .setLabel('⬅')
       .setStyle(ButtonStyle.Primary);
 
-    const row = new ActionRowBuilder().addComponents(
-      lastItem,
-      nextItem
-    );
+    const buyOne = new ButtonBuilder()
+      .setCustomId('buyOne')
+      .setLabel('one')
+      .setStyle(ButtonStyle.Primary);
+
+
+    const row = new ActionRowBuilder().addComponents(lastItem, nextItem, buyOne);
 
     await interaction.update({
       embeds: [embed],

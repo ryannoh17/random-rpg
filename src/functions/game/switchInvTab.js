@@ -14,11 +14,18 @@ module.exports = (client) => {
         fields[i].name = fields[i].name.replaceAll('_', '');
 
         const { value: items } = fields[i];
-        const itemList = items.split('\n');
 
+        if (items.length <= 1) {
+          oldEmbed.fields[i].items = '\u200B'
+          break
+        }        
+        
+        const itemList = items.split('\n');
         const index = itemList.findIndex((item) => item.includes('*'));
 
-        if (index === -1) break;
+        if (index === -1) {
+          break
+        }
 
         itemList[index] = itemList[index].replace(/\*/g, '');
 
@@ -28,15 +35,15 @@ module.exports = (client) => {
 
     fields[num].name = `__${name}__`;
 
-    if (segItems.length > 0) {
+    if (segItems.length > 1) {
       const segList = segItems.split('\n');
       segList[0] = `**${segList[0]}**`;
       const newItems = segList.join('\n');
 
-      fields[num].value = newItems;
+      oldEmbed.fields[num].value = newItems;
 
       if (otherIndex && otherIndex !== num) {
-        fields[otherIndex].value = otherItems;
+        oldEmbed.fields[otherIndex].value = otherItems;
       }
     }
 
@@ -45,3 +52,9 @@ module.exports = (client) => {
     });
   };
 };
+
+
+/* can't assign empty value to field?
+just splice field if i have to */
+
+// YO THIS SHIT SCUFFED AS FUCK RECHECK AND OPTIMIze

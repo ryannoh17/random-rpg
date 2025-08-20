@@ -6,11 +6,15 @@ const {
   ButtonStyle,
 } = require('discord.js');
 const Profile = require('../../schemas/profile');
+const { itemArray: allItemsArray } = require('../../items');
 
-const shopList = ['healing potion', 'greater healing potion'];
+const indicesToInclude = [7, 8]; 
+const shopItemsArray = indicesToInclude.map(index => allItemsArray[index]);
+const shopList = shopItemsArray.map(items => items.name);
+// ['healing potion', 'greater healing potion']
 
 module.exports = {
-  shopList,
+  shopItemsArray, shopList,
   data: new SlashCommandBuilder().setName('shop').setDescription('opens shop'),
   async execute(interaction) {
     const { user, guild } = interaction;
@@ -41,6 +45,10 @@ module.exports = {
       .setTitle(`Shop`)
       .setThumbnail('https://i.stack.imgur.com/Fzh0w.png')
       .addFields([
+        {
+          name: '\u200B',
+          value: '\u200B',
+        },
         {
           name: 'Items',
           value: `${shopItems}`,

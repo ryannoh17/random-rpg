@@ -30,15 +30,15 @@ module.exports = {
       .setLabel('⬅')
       .setStyle(ButtonStyle.Primary);
     const sellOne = new ButtonBuilder()
-      .setCustomId('selectOne')
+      .setCustomId('sellOne')
       .setLabel('x1')
       .setStyle(ButtonStyle.Primary);
     const sellTen = new ButtonBuilder()
-      .setCustomId('selectTen')
+      .setCustomId('sellTen')
       .setLabel('x10')
       .setStyle(ButtonStyle.Primary);
     const sellAll = new ButtonBuilder()
-      .setCustomId('selectAll')
+      .setCustomId('sellAll')
       .setLabel('xAll')
       .setStyle(ButtonStyle.Primary);
     const materials = new ButtonBuilder()

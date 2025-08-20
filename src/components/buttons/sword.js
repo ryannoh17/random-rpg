@@ -3,7 +3,7 @@ const Profile = require('../../schemas/profile');
 
 module.exports = {
   data: {
-    name: 'attack',
+    name: 'sword',
   },
 
   async execute(interaction, client) {
@@ -19,7 +19,7 @@ module.exports = {
     const { monster, _id: dbId, maxHealth: playerMaxHealth } = storedProfile;
     let { health: playerHealth } = storedProfile;
 
-    monster.health -= storedProfile.attack;
+    monster.health -= storedProfile.strength;
     playerHealth -= monster.attack;
 
     const {
@@ -29,10 +29,11 @@ module.exports = {
     } = monster;
 
     const row = message.components[0];
-    const newAttackButton = ButtonBuilder.from(button).setDisabled(true);
-    const attackButton = ButtonBuilder.from(button).setDisabled(false);
+    const newSwordButton = ButtonBuilder.from(button).setDisabled(true);
+    const swordButton = ButtonBuilder.from(button).setDisabled(false);
 
     // --- WHEN MONSTER DIES ---
+
     if (monsterHealth <= 0) {
       const newExp = storedProfile.exp + 30;
       monster.health = monsterMaxHealth;
@@ -41,7 +42,7 @@ module.exports = {
       // maybe change this later since updating db twice is bad
       await client.checkExp(user.id, guild.id);
 
-      row.components[0] = newAttackButton;
+      row.components[0] = newSwordButton;
 
       const newEmbed = EmbedBuilder.from(oldEmbed)
         .spliceFields(1, 1, {
@@ -68,13 +69,15 @@ module.exports = {
           monster,
         }
       );
+
       // --- WHEN PLAYER DIES ---
+
     } else if (playerHealth <= 0) {
       const newNextButton = ButtonBuilder.from(row.components[2]).setDisabled(
         true
       );
       row.components[2] = newNextButton;
-      row.components[0] = newAttackButton;
+      row.components[0] = newSwordButton;
 
       const playerHit = EmbedBuilder.from(oldEmbed).spliceFields(1, 1, {
         name: `${monsterName}`,
@@ -111,16 +114,27 @@ module.exports = {
         {
           maxHealth: 100,
           health: 100,
-          attack: 20,
+          maxMana: 0,
+          mana: 0,
+          strength: 10,
+          stamina: 5,
+          defense: 0,
+          wisdom: 0,
+          intelligence: 0,
+          agility: 0,
+          statPoints: 0,
           level: 1,
           exp: 0,
           maxExp: 100,
           monster: null,
           isFighting: false,
           inventory: [[], [], []],
+          coins: 0
         }
       );
+
       // --- DEFAULT ---
+
     } else {
       const playerHit = EmbedBuilder.from(oldEmbed).spliceFields(1, 1, {
         name: `${monsterName}`,
@@ -134,7 +148,7 @@ module.exports = {
         inline: true,
       });
 
-      row.components[0] = newAttackButton;
+      row.components[0] = newSwordButton;
 
       await interaction
         .update({
@@ -143,7 +157,7 @@ module.exports = {
         })
         .then(() => {
           setTimeout(() => {
-            row.components[0] = attackButton;
+            row.components[0] = swordButton;
 
             interaction.editReply({
               embeds: [monsterHit],

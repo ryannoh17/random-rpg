@@ -3,8 +3,8 @@ const { EmbedBuilder } = require('discord.js');
 const Profile = require('../../schemas/profile');
 
 module.exports = (client) => {
-  client.selectSome = async (interaction, num) => {
-    // CODE DOES NOT WORK FOR LAST ITEM PLS FIX
+  client.sellSome = async (interaction, num) => {
+    // CODE DOES NOT WORK FOR LAST ITEM PLS FIX (i think its fixed)
     const { user, guild, message } = interaction
 
     const storedProfile = await Profile.findOne({
@@ -18,6 +18,7 @@ module.exports = (client) => {
     const { fields } = oldEmbed;
     let invIndex;
 
+    // find inventory section (wait how is this working)
     for (let i = 0; i < inventory.length; i++) {
       if (fields[i].name.includes('_')) {
         invIndex = i;
@@ -26,10 +27,11 @@ module.exports = (client) => {
 
     const { value, name } = fields[invIndex];
 
-    if(value.length === 1) {
+    if(value.length <= 5) {
       return null;
     }
 
+    // find selected item
     const itemList = value.split('\n');
     let index = itemList.findIndex((item) => item.includes('*'));
         
@@ -40,6 +42,7 @@ module.exports = (client) => {
 
     let coinCount;
 
+    // checks to see if your selling all of selected item
     if (!num || newQuantity <= 0) {
       selectedItem.quantity = 0;
       coinCount = coins + selectedItem.price * itemQuantity;

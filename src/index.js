@@ -2,12 +2,7 @@
 /* eslint-disable import/no-dynamic-require */
 /* eslint-disable no-restricted-syntax */
 
-const {
-  Client,
-  GatewayIntentBits,
-  Partials,
-  Collection,
-} = require('discord.js');
+const { Client, GatewayIntentBits, Partials, Collection } = require('discord.js');
 const { connect } = require('mongoose');
 const { glob } = require('glob');
 // const fs = require('fs');
@@ -34,7 +29,7 @@ client.commandArray = [];
 async function doGlob() {
   const functionFiles = await glob(`src/functions/**/*.js`);
 
-  for (const file of functionFiles){
+  for (const file of functionFiles) {
     const realPath = file.replace('src', '.');
     require(realPath)(client);
   }

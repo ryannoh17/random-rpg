@@ -39,9 +39,9 @@ module.exports = {
         ephemeral: true,
       });
 
-    const attackButton = new ButtonBuilder()
-      .setCustomId('attack')
-      .setLabel('attack')
+    const swordButton = new ButtonBuilder()
+      .setCustomId('sword')
+      .setLabel('sword')
       .setStyle(ButtonStyle.Primary);
 
     const potionButton = new ButtonBuilder()
@@ -55,7 +55,7 @@ module.exports = {
       .setStyle(ButtonStyle.Primary);
 
     const row = new ActionRowBuilder().addComponents(
-      attackButton,
+      swordButton,
       potionButton,
       nextButton
     );

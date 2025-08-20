@@ -15,7 +15,7 @@ module.exports = {
       { userId: user.id, guildId: guild.id },
       {
         health: 999,
-        attack: 999,
+        strength: 999,
       }
     );
 

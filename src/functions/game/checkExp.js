@@ -8,7 +8,7 @@ module.exports = (client) => {
       guildId,
     });
 
-    const { exp, maxExp, attack, maxHealth, level } = storedProfile;
+    const { exp, maxExp, strength, maxHealth, level, statPoints } = storedProfile;
 
     const leftover = exp - maxExp;
 
@@ -18,10 +18,11 @@ module.exports = (client) => {
       await Profile.findByIdAndUpdate(
         { _id: storedProfile._id },
         {
+          statPoints: statPoints + 1,
           level: newLevel,
           exp: leftover,
           maxExp: newLevel * 100,
-          attack: attack + 1,
+          strength: strength + 1,
           maxHealth: maxHealth + 2,
         }
       );
