@@ -1,14 +1,14 @@
-const {
+import {
   SlashCommandBuilder,
   ActionRowBuilder,
   ButtonBuilder,
   ButtonStyle,
-} = require('discord.js');
-const Profile = require('../../schemas/profile');
-const Monster = require('../../classes/monster');
-const { itemArray } = require('../../items');
+} from "discord.js";
+import { Profile } from "../../schemas/profile.js";
+import { Monster } from "../../classes/monster.js";
+import { itemArray } from "../../items.js";
 
-module.exports = {
+export default {
   data: new SlashCommandBuilder()
     .setName('fight')
     .setDescription('Fight!')

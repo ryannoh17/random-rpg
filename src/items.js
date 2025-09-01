@@ -1,4 +1,4 @@
-const itemArray = [
+export const itemArray = [
   {
     name: 'stick',
     id: 0,
@@ -80,5 +80,3 @@ const itemArray = [
     description: '',
   },
 ];
-
-module.exports = { itemArray };

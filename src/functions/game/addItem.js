@@ -1,8 +1,6 @@
-/* eslint-disable no-param-reassign */
-const Profile = require('../../schemas/profile');
+import { Profile } from "../../schemas/profile.js";
 
-module.exports = (client) => {
-  // eslint-disable-next-line consistent-return
+export default (client) => {
   client.addItem = async (inventory, invIndex, addedItem, profileId) => {
     if (addedItem.length === 0) return;
 

@@ -1,7 +1,4 @@
-/* eslint-disable no-param-reassign */
-
-module.exports = (client) => {
-  // eslint-disable-next-line consistent-return
+export default (client) => {
   client.addToInv = async (inventory, addedItemArray, profileId) => {
     const materialItems = [];
     const potionItems = [];

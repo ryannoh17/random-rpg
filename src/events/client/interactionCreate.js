@@ -1,4 +1,4 @@
-module.exports = {
+export default {
   name: 'interactionCreate',
   async execute(interaction, client) {
     if (interaction.isChatInputCommand()) {
@@ -9,7 +9,7 @@ module.exports = {
       if (!command) return;
 
       try {
-        await command.execute(interaction, client);
+        await command.default.execute(interaction, client);
       } catch (error) {
         console.error(error);
         await interaction.reply({
@@ -22,11 +22,10 @@ module.exports = {
       const { customId } = interaction;
       const button = buttons.get(customId);
 
-      // eslint-disable-next-line consistent-return
       if (!button) return new Error('button does not exist');
 
       try {
-        await button.execute(interaction, client);
+        await button.default.execute(interaction, client);
       } catch (err) {
         console.error(err);
       }

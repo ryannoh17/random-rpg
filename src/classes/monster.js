@@ -1,4 +1,4 @@
-class Monster {
+export class Monster {
   constructor(name, health, attack, drops, level, exp) {
     this.name = name;
     this.maxHealth = health;
@@ -9,5 +9,3 @@ class Monster {
     this.exp = exp;
   }
 }
-
-module.exports = Monster;

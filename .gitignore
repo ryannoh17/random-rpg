@@ -2,3 +2,6 @@
 .eslintrc.json
 package-lock.json
 package.json
+.gitignore
+dist
+.vscode

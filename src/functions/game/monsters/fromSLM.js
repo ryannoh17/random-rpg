@@ -1,8 +1,7 @@
-const Monster = require('../../../classes/monster');
-const { itemArray } = require('../../../items');
+import { Monster } from "../../../classes/monster.js";
+import { itemArray } from "../../../items.js";
 
-module.exports = (client) => {
-  // eslint-disable-next-line no-param-reassign
+export default (client) => {
   client.fromSLM = async () => {
     const int = Math.floor(Math.random() * 100);
 

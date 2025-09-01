@@ -1,7 +1,7 @@
-const { EmbedBuilder, ButtonBuilder } = require('discord.js');
-const Profile = require('../../schemas/profile');
+import { EmbedBuilder, ButtonBuilder } from "discord.js";
+import { Profile } from "../../schemas/profile.js";
 
-module.exports = {
+export default {
   data: {
     name: 'sword',
   },

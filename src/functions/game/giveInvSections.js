@@ -1,6 +1,4 @@
-/* eslint-disable no-param-reassign */
-
-module.exports = (client) => {
+export default (client) => {
   client.giveInvSections = async (inventory, num) => {
     const matArray = inventory[0].map((items) => {
       if (items.quantity > 1) {

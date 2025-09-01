@@ -1,5 +1,4 @@
-module.exports = (client) => {
-  // eslint-disable-next-line no-param-reassign
+export default (client) => {
   client.switchInvTab = async (interaction, num) => {
     const oldEmbed = interaction.message.embeds[0];
     const { fields } = oldEmbed;

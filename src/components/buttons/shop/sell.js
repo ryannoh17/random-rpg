@@ -1,7 +1,7 @@
-const { ButtonBuilder, ButtonStyle, ActionRowBuilder } = require('discord.js');
-const Profile = require('../../../schemas/profile');
+import { ButtonBuilder, ButtonStyle, ActionRowBuilder } from "discord.js";
+import { Profile } from "../../../schemas/profile.js";
 
-module.exports = {
+export default {
   data: {
     name: 'sell',
   },

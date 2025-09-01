@@ -1,4 +1,4 @@
-const { Schema, model } = require('mongoose');
+import { Schema, model } from "mongoose";
 
 const profileScehma = new Schema({
   userId: String,
@@ -26,4 +26,4 @@ const profileScehma = new Schema({
 
 // wisdom, intelligence, strength, endurance, stamina, agility 
 
-module.exports = model('Profile', profileScehma, 'profiles');
+export const Profile = model('Profile', profileScehma, 'profiles');

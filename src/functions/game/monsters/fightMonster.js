@@ -1,7 +1,6 @@
-const Profile = require('../../../schemas/profile');
+import { Profile } from "../../../schemas/profile.js";
 
-module.exports = (client) => {
-  // eslint-disable-next-line no-param-reassign
+export default (client) => {
   client.fightMonster = async (interaction, monster, row, area) => {
     const { user, guild } = interaction;
 

@@ -1,7 +1,6 @@
-/* eslint-disable no-param-reassign */
-const { EmbedBuilder } = require('discord.js');
-const Profile = require('../../schemas/profile');
-const { shopItemsArray } = require('../../commands/game/shop');
+import { EmbedBuilder } from "discord.js";
+import { Profile } from "../../schemas/profile.js";
+import { shopItemsArray } from "../../commands/game/shop.js";
 
 function getInvIndex(fields) {
   let invIndex = -1;
@@ -28,7 +27,7 @@ function getShopEmbedIndex(fieldValue, shopItemList) {
 
 // }
 
-module.exports = (client) => {
+export default (client) => {
   client.buySome = async (interaction, num) => {
     const { user, guild, message } = interaction;
     const oldEmbed = message.embeds[0];

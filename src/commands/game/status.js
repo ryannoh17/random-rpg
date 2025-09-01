@@ -1,13 +1,13 @@
-const {
+import {
   SlashCommandBuilder,
   EmbedBuilder,
   ButtonBuilder,
   ActionRowBuilder,
-  ButtonStyle,
-} = require('discord.js');
-const Profile = require('../../schemas/profile');
+  ButtonStyle
+} from "discord.js";
+import { Profile } from "../../schemas/profile.js";
 
-module.exports = {
+export default {
   data: new SlashCommandBuilder()
     .setName('status')
     .setDescription('Brings Up Status Window')

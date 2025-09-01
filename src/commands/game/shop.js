@@ -1,20 +1,19 @@
-const {
+import {
   SlashCommandBuilder,
   EmbedBuilder,
   ActionRowBuilder,
   ButtonBuilder,
-  ButtonStyle,
-} = require('discord.js');
-const Profile = require('../../schemas/profile');
-const { itemArray: allItemsArray } = require('../../items');
+  ButtonStyle
+} from "discord.js";
+import { Profile } from "../../schemas/profile.js";
+import { itemArray as allItemsArray } from "../../items.js";
 
 const indicesToInclude = [7, 8]; 
-const shopItemsArray = indicesToInclude.map(index => allItemsArray[index]);
-const shopList = shopItemsArray.map(items => items.name);
+export const shopItemsArray = indicesToInclude.map(index => allItemsArray[index]);
+export const shopList = shopItemsArray.map(items => items.name);
 // ['healing potion', 'greater healing potion']
 
-module.exports = {
-  shopItemsArray, shopList,
+export default {
   data: new SlashCommandBuilder().setName('shop').setDescription('opens shop'),
   async execute(interaction) {
     const { user, guild } = interaction;

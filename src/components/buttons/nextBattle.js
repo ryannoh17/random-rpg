@@ -1,7 +1,7 @@
-const { ButtonBuilder } = require("discord.js");
-const Profile = require("../../schemas/profile");
+import { ButtonBuilder } from "discord.js";
+import { Profile } from "../../schemas/profile.js";
 
-module.exports = {
+export default {
   data: {
     name: "nextBattle",
   },
@@ -51,6 +51,7 @@ module.exports = {
       embeds: [monsterEmbed],
       components: [row],
     });
+    
     // const { user, guild, message } = interaction;
 
     // const storedProfile = await Profile.findOne({

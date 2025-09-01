@@ -1,7 +1,6 @@
-const { EmbedBuilder } = require('discord.js');
+import { EmbedBuilder } from "discord.js";
 
-module.exports = (client) => {
-  // eslint-disable-next-line no-param-reassign
+export default (client) => {
   client.createInvEmbed = async (inventory, invSections, coins) => {
     const coinAmt = coins || '0';
 

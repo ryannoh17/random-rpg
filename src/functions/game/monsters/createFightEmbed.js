@@ -1,7 +1,6 @@
-const { EmbedBuilder } = require('discord.js');
+import { EmbedBuilder } from "discord.js";
 
-module.exports = (client) => {
-  // eslint-disable-next-line no-param-reassign
+export default (client) => {
   client.createFightEmbed = async (monster, playerName, player, area) => {
     const embed = new EmbedBuilder()
       .setTitle(`${area}`)

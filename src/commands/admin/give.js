@@ -1,8 +1,8 @@
-const { SlashCommandBuilder } = require('discord.js');
-const Profile = require('../../schemas/profile');
-const { itemArray } = require('../../items');
+import { SlashCommandBuilder } from "discord.js";
+import { Profile } from "../../schemas/profile.js";
+import { itemArray } from "../../items.js";
 
-module.exports = {
+export default {
   data: new SlashCommandBuilder()
     .setName('give')
     .setDescription('gives items')

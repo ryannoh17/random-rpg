@@ -1,8 +1,7 @@
-/* eslint-disable no-param-reassign */
-const { EmbedBuilder } = require('discord.js');
-const Profile = require('../../schemas/profile');
+import { EmbedBuilder } from "discord.js";
+import { Profile } from "../../schemas/profile.js";
 
-module.exports = (client) => {
+export default (client) => {
   client.sellSome = async (interaction, num) => {
     // CODE DOES NOT WORK FOR LAST ITEM PLS FIX (i think its fixed)
     const { user, guild, message } = interaction

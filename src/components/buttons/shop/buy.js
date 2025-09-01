@@ -1,12 +1,12 @@
-const {
+import {
   EmbedBuilder,
   ButtonBuilder,
   ButtonStyle,
-  ActionRowBuilder,
-} = require('discord.js');
-const { shopList } = require('../../../commands/game/shop');
+  ActionRowBuilder
+} from "discord.js";
+import { shopList } from "../../../commands/game/shop.js";
 
-module.exports = {
+export default {
   data: {
     name: 'buy',
   },

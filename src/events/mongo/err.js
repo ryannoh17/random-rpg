@@ -1,4 +1,4 @@
-module.exports = {
+export default {
   name: 'err',
   execute() {
     // eslint-disable-next-line no-undef
