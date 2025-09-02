@@ -1,7 +1,8 @@
 import type {
   SlashCommandBuilder,
-  ChatInputCommandInteraction,
   Client,
+  ChatInputCommandInteraction,
+  MessageComponentInteraction,
 } from "discord.js";
 
 export type commandFile = {
@@ -20,7 +21,7 @@ export type componentFile = {
       name: string;
     };
     execute: (
-      interaction: ChatInputCommandInteraction,
+      interaction: MessageComponentInteraction,
       client: Client
     ) => Promise<any>;
   };

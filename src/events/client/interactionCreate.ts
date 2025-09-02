@@ -1,6 +1,8 @@
+import type { BaseInteraction, Client } from "discord.js";
+
 export default {
   name: 'interactionCreate',
-  async execute(interaction, client) {
+  async execute(interaction: BaseInteraction, client: Client) {
     if (interaction.isChatInputCommand()) {
       const { commands } = client;
       const { commandName } = interaction;
