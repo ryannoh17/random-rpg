@@ -1,7 +1,6 @@
 export default {
   name: 'err',
-  execute() {
-    // eslint-disable-next-line no-undef
+  execute(err: Error) {
     console.log(`A database error has occured\n${err}`);
   },
 };

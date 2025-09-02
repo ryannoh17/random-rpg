@@ -71,17 +71,6 @@ client.login(
 // https://discord.com/oauth2/authorize?client_id=1079791021560438854&scope=bot&permissions=8
 // mongodb+srv://ryannoh17:7077527@cluster0.ujqzyoh.mongodb.net/?retryWrites=true&w=majority
 
-// random events pop up through buttons by chance
-// make skills, check skills, give skiils
-// auto battle / afk battling
-// make next button not appear until monster is defeated
-// converting everything to TS HAHAHAHAHAHAHHAHAHAA
-
-// create functions for monster stats (rng)
-// make a fight command (maybe using menu/buttons)
-
-// switch if statements to switch after implementing multiple interaction types
-
 // uhhhhh
 
 // const fs = require('fs');

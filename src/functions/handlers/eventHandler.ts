@@ -6,15 +6,15 @@ const { connection } = mongoose;
 
 export default (client: Client) => {
   client.eventHandler = async () => {
-    const eventFolders = readdirSync(`./src/events`);
+    const eventFolders = readdirSync(`./dist/events`);
     for (const folder of eventFolders) {
-      const eventFiles = readdirSync(`./src/events/${folder}`)
+      const eventFiles = readdirSync(`./dist/events/${folder}`)
         .filter((file) => file.endsWith('js'));
 
       switch (folder) {
         case 'client':
           for (const file of eventFiles) {
-            const event: eventFile = await import(`../../../src/events/${folder}/${file}`);
+            const event: eventFile = await import(`../../events/${folder}/${file}`);
 
             if (event.default.once)
               client.once(event.default.name, (...args) =>
@@ -29,7 +29,7 @@ export default (client: Client) => {
 
         case 'mongo':
           for (const file of eventFiles) {
-            const event: eventFile = await import(`../../../src/events/${folder}/${file}`);
+            const event: eventFile = await import(`../../events/${folder}/${file}`);
 
             if (event.default.once)
               connection.once(event.default.name, (...args) =>
