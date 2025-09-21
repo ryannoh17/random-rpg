@@ -1,0 +1,67 @@
+{
+  "items": [
+    {
+      "name": "stick",
+      "id": 0,
+      "type": "material",
+      "price": 0,
+      "description": ""
+    },
+    {
+      "name": "slime",
+      "id": 1,
+      "type": "material",
+      "price": 1,
+      "description": ""
+    },
+    {
+      "name": "rabbit horn",
+      "id": 2,
+      "type": "material",
+      "price": 3,
+      "description": ""
+    },
+    {
+      "name": "wolf fur",
+      "id": 3,
+      "type": "material",
+      "price": 2,
+      "description": ""
+    },
+    {
+      "name": "boar tusk",
+      "id": 4,
+      "type": "material",
+      "price": 4,
+      "description": ""
+    },
+    {
+      "name": "goblin ear",
+      "id": 5,
+      "type": "material",
+      "price": 3,
+      "description": ""
+    },
+    {
+      "name": "big stick",
+      "id": 6,
+      "type": "equipment",
+      "price": 0,
+      "description": ""
+    },
+    {
+      "name": "healing potion",
+      "id": 7,
+      "type": "potion",
+      "price": 0,
+      "description": ""
+    },
+    {
+      "name": "greater healing potion",
+      "id": 8,
+      "type": "potion",
+      "price": 0,
+      "description": ""
+    }
+  ]
+}

@@ -12,6 +12,7 @@ import commandHandler from "./functions/handlers/commandHandler.js";
 import eventHandler from "./functions/handlers/eventHandler.js";
 import componentHandler from "./functions/handlers/componentHandler.js";
 import type { commandFile, componentFile, functionFile } from "./types.js";
+import { config } from "dotenv"
 
 declare module "discord.js" {
   interface Client {
@@ -48,7 +49,7 @@ client.eventHandler();
 client.componentHandler();
 
 async function doGlob(): Promise<void> {
-  const functionFiles = await glob(`src/functions/**/*.js`);
+  const functionFiles = await glob(`src/functions/handlers/*.js`);
 
   for (const file of functionFiles) {
     const realPath = ("../").concat(file);
@@ -58,14 +59,10 @@ async function doGlob(): Promise<void> {
 }
 await doGlob();
 
-client.login(
-  "MTA3OTc5MTAyMTU2MDQzODg1NA.GUPqjv.0-rWgMvmlMxcYvj9wcclCjKcEZQz1_ArVHO0b0"
-);
+client.login(process.env.DISCORD_BOT_KEY);
 
 (async (): Promise<void> => {
-  await connect(
-    "mongodb+srv://ryannoh17:7077527@cluster0.ujqzyoh.mongodb.net/?retryWrites=true&w=majority"
-  ).catch(console.error);
+  await connect(process.env.MONGODB_KEY!).catch(console.error);
 })();
 
 // https://discord.com/oauth2/authorize?client_id=1079791021560438854&scope=bot&permissions=8

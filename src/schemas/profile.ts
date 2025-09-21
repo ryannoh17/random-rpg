@@ -1,9 +1,12 @@
-import { Schema, model } from "mongoose";
+import { Schema, model, type HydratedDocument, type InferSchemaType } from "mongoose";
+import { Monster } from "../classes/monster.js"
+import type { Item } from "../classes/Inventory.js";
+import { ItemSchema } from "./item.js";
 
 const profileScehma = new Schema({
-  userId: String,
-  tag: String,
-  guildId: String,
+  userID: { type: Number, required: true },
+  tag: { type: String, required: true },
+  guildID: { type: Number, required: true },
   maxHealth: { type: Number, default: 100 },
   health: { type: Number, default: 100 },
   maxMana: { type: Number, default: 0 },
@@ -18,12 +21,15 @@ const profileScehma = new Schema({
   level: { type: Number, default: 1 },
   exp: { type: Number, default: 0 },
   maxExp: { type: Number, default: 100 },
-  monster: Object,
+  monster: { type: Monster, default: null },
   isFighting: { type: Boolean, default: false },
-  inventory: { type: Array, default: [[],[],[]] },
+  inventory: { type: ItemSchema[][], default: [[],[],[]] },
   coins: { type: Number, default: 0 }
 });
 
 // wisdom, intelligence, strength, endurance, stamina, agility 
 
-export const Profile = model('Profile', profileScehma, 'profiles');
+export type ProfileType = InferSchemaType<typeof profileScehma>;
+export type ProfileDocType = HydratedDocument<ProfileType>;
+
+export const Profile = model<ProfileDocType>('Profile', profileScehma);
