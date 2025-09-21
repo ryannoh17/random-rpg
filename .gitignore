@@ -6,3 +6,4 @@ package.json
 dist
 .vscode
 to-do.txt
+.env
