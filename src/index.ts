@@ -66,7 +66,6 @@ client.login(process.env.DISCORD_BOT_KEY);
 })();
 
 // https://discord.com/oauth2/authorize?client_id=1079791021560438854&scope=bot&permissions=8
-// mongodb+srv://ryannoh17:7077527@cluster0.ujqzyoh.mongodb.net/?retryWrites=true&w=majority
 
 // uhhhhh
 
