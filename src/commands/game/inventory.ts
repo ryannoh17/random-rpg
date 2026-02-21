@@ -1,5 +1,6 @@
 import { ChatInputCommandInteraction, Client, SlashCommandBuilder } from "discord.js";
 import { Profile } from "../../schemas/profile.js";
+import { Player } from "../../classes/Player.js";
 
 export default {
   data: new SlashCommandBuilder()
@@ -11,24 +12,8 @@ export default {
     if (guild == null) 
       return interaction.reply("user not in a server");
     
-    const { id: userID, username } = user;
-
-    const storedProfile = await Profile.findOne({
-      userId: userID,
-      guildId: guild.id,
-    });
-
-    if (!storedProfile)
-      return interaction.reply({
-        content: `${username}'s profile does not exist`,
-        ephemeral: true,
-      });
-
-    const { inventory, coins } = storedProfile;
-
-    const invSections = await client.giveInvSections(inventory);
-
-    const embed = await client.createInvEmbed(inventory, invSections, coins);
+    let player = await Player.load(user.id, guild.id);
+    const embed = player.createInvEmbed()
 
     return interaction.reply({
       embeds: [embed],

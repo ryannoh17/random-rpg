@@ -105,13 +105,13 @@ export default {
       .setLabel('agility')
       .setStyle(ButtonStyle.Primary);
 
-    const row = new ActionRowBuilder().addComponents(
+    const row = new ActionRowBuilder<ButtonBuilder>().addComponents(
       addStrengthButton,
       addStaminaButton,
       addDefenseButton
     );
 
-    const row2 = new ActionRowBuilder().addComponents(
+    const row2 = new ActionRowBuilder<ButtonBuilder>().addComponents(
       addWisdomButton,
       addIntelligenceButton,
       addAgilityButton

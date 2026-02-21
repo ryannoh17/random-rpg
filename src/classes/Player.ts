@@ -171,6 +171,71 @@ export class Player {
     }
   }
 
+  private mapInventorySection(sectionIndex: number) {
+    const sectionArray = this.inventory[sectionIndex]!.map((items) => {
+      if (items.quantity > 1) {
+        return `${items.name} x${items.quantity}`;
+      }
+      return items.name;
+    });
+
+    return sectionArray;
+  }
+
+  createInvEmbed() {
+    const coinAmount = this.coins;
+    
+
+    const embed = new EmbedBuilder()
+      .setTitle(`Inventory`)
+      .setThumbnail('https://i.stack.imgur.com/Fzh0w.png')
+      .addFields([
+        {
+          name: 'Coins',
+          value: `${coinAmount}`,
+        },
+        {
+          name: 'Materials',
+          value: `\u200B`,
+          inline: true,
+        },
+        {
+          name: 'Potions',
+          value: `\u200B`,
+          inline: true,
+        },
+        {
+          name: 'Equipment',
+          value: `\u200B`,
+          inline: true,
+        },
+      ]);
+
+    if (this.inventory[0]!.length > 0) {
+      embed.spliceFields(1, 1, {
+        name: 'Materials',
+        value: `${this.mapInventorySection(0)}`,
+        inline: true,
+      });
+    }
+    if (this.inventory[1]!.length > 0) {
+      embed.spliceFields(2, 1, {
+        name: 'Potions',
+        value: `${this.mapInventorySection(1)}`,
+        inline: true,
+      });
+    }
+    if (this.inventory[2]!.length > 0) {
+      embed.spliceFields(3, 1, {
+        name: 'Equipment',
+        value: `${this.mapInventorySection(2)}`,
+        inline: true,
+      });
+    }
+
+    return embed;
+  }
+
   async savePlayer(): Promise<void> {
     await Profile.updateOne(
       { userId: this.userID, guildId: this.guildID },
