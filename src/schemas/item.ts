@@ -1,12 +1,12 @@
-import { Schema } from "mongoose";
+import { Schema, type InferSchemaType } from "mongoose";
 
 export const ItemSchema = new Schema({
-  itemInfo: {
-    name: { type: String },
-    id: Number,
-    type: String,
-    price: Number,
-    description: String
-  },
-  quantity: { type: Number }
+  name: { type: String, required: true },
+  id: { type: Number, required: true },
+  type: { type: String, required: true, enum: ['material', 'potion', 'equipment'] },
+  price: { type: Number, required: true },
+  description: { type: String, required: true },
+  quantity: { type: Number, required: true }
 }, { _id: false });
+
+export type ItemType = InferSchemaType<typeof ItemSchema>;

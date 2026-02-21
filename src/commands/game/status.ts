@@ -3,7 +3,8 @@ import {
   EmbedBuilder,
   ButtonBuilder,
   ActionRowBuilder,
-  ButtonStyle
+  ButtonStyle,
+  ChatInputCommandInteraction
 } from "discord.js";
 import { Profile } from "../../schemas/profile.js";
 
@@ -15,8 +16,12 @@ export default {
       option.setName('target').setDescription('searches selected user ')
     ),
 
-  async execute(interaction) {
+  async execute(interaction: ChatInputCommandInteraction) {
     const { user, guild } = interaction;
+
+    if (guild == null) 
+      return interaction.reply("user not in a server");
+    
     const selectedUser = interaction.options.getUser('target') || user;
 
     if (selectedUser !== user && user.id !== '449357416287567873')

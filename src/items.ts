@@ -1,4 +1,6 @@
-export const itemArray = [
+import { type ItemType } from './schemas/item.js'
+
+export const itemArray: ItemType[] = [
   {
     name: 'stick',
     id: 0,

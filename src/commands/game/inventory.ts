@@ -1,21 +1,26 @@
-import { SlashCommandBuilder } from "discord.js";
+import { ChatInputCommandInteraction, Client, SlashCommandBuilder } from "discord.js";
 import { Profile } from "../../schemas/profile.js";
 
 export default {
   data: new SlashCommandBuilder()
     .setName('inventory')
     .setDescription('brings up inventory'),
-  async execute(interaction, client) {
+  async execute(interaction: ChatInputCommandInteraction, client: Client) {
     const { user, guild } = interaction;
 
+    if (guild == null) 
+      return interaction.reply("user not in a server");
+    
+    const { id: userID, username } = user;
+
     const storedProfile = await Profile.findOne({
-      userId: user.id,
+      userId: userID,
       guildId: guild.id,
     });
 
     if (!storedProfile)
       return interaction.reply({
-        content: `${user.username}'s profile does not exist`,
+        content: `${username}'s profile does not exist`,
         ephemeral: true,
       });
 

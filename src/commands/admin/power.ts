@@ -1,12 +1,15 @@
-import { SlashCommandBuilder } from "discord.js";
+import { ChatInputCommandInteraction, SlashCommandBuilder } from "discord.js";
 import { Profile } from "../../schemas/profile.js";
 
 export default {
   data: new SlashCommandBuilder()
     .setName('power')
     .setDescription('gives power'),
-  async execute(interaction) {
+  async execute(interaction: ChatInputCommandInteraction) {
     const { user, guild } = interaction;
+
+    if (guild == null) 
+      return interaction.reply("user not in a server");
 
     if (user.id !== '449357416287567873')
       return interaction.reply('not an admin can not use');

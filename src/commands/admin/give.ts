@@ -5,6 +5,7 @@ import {
 } from "discord.js";
 import { Profile } from "../../schemas/profile.js";
 import { itemArray } from "../../items.js";
+import { Player } from "../../classes/Player.js"
 
 export default {
   data: new SlashCommandBuilder()
@@ -23,35 +24,42 @@ export default {
 
   async execute(interaction: ChatInputCommandInteraction, client: Client) {
     const { user, guild } = interaction;
+    const userID = user.id;
+
+    if (guild == null) {
+      return interaction.reply("user not in a server");
+    }
+    const guildID = guild.id;
 
     if (user.id !== "449357416287567873")
       return interaction.reply("not an admin can not use");
 
-    const storedProfile = await Profile.findOne({
-      userId: user.id,
-      guildId: guild!.id,
-    });
-
-    if (!storedProfile) 
-      return interaction.reply("user does not exist");
-
-    const { inventory, _id } = storedProfile;
-
-    const itemName = await interaction.options.getString("item");
-    const itemAmount = await interaction.options.getInteger("amount")!;
+    const itemName = interaction.options.getString("item");
+    const itemAmount = interaction.options.getInteger("amount")!;
 
     const selectedItem = itemArray.find((item) => item.name === itemName);
-
     if (!selectedItem) {
       return interaction.reply({
         content: `${itemName} does not exist`,
         ephemeral: true,
       });
     }
-
     selectedItem.quantity = itemAmount;
 
-    await client.addToInv(inventory, [selectedItem], _id);
+    let player: Player;
+    try {
+      player = await Player.load(userID, guildID);
+      player.addToInventory([selectedItem]);
+    } catch (error) {
+      console.error(error);
+      return await interaction.reply("user does not exist");
+    }
+
+    try {
+      await player.savePlayer();
+    } catch (error) {
+      console.error(error);
+    }
 
     return interaction.reply({
       content: `${itemAmount} ${itemName} given`,

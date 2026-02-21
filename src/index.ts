@@ -18,7 +18,7 @@ declare module "discord.js" {
   interface Client {
     commands: Collection<string, commandFile>;
     buttons: Collection<string, componentFile>;
-    cooldowns: Collection<number, any>;
+    cooldowns: Collection<string, boolean>;
     inventory: Collection<string, any>;
     commandArray: any[];
     commandHandler: () => void;

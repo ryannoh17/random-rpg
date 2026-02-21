@@ -1,10 +1,10 @@
-import { SlashCommandBuilder } from "discord.js";
+import { ChatInputCommandInteraction, Client, SlashCommandBuilder } from "discord.js";
 
 export default {
   data: new SlashCommandBuilder()
     .setName('ping')
     .setDescription('Returns ping'),
-  async execute(interaction, client) {
+  async execute(interaction: ChatInputCommandInteraction, client: Client) {
     const message = await interaction.deferReply({
       fetchReply: true,
     });

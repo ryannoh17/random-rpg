@@ -13,7 +13,7 @@ export default {
       return interaction.reply('not an admin can not use');
 
     if (guild == null) {
-      return interaction.reply('user does not exist');
+      return interaction.reply("user not in a server");
     }
 
     const result = await Profile.deleteOne({

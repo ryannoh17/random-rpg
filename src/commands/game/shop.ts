@@ -3,20 +3,24 @@ import {
   EmbedBuilder,
   ActionRowBuilder,
   ButtonBuilder,
-  ButtonStyle
+  ButtonStyle,
+  ChatInputCommandInteraction
 } from "discord.js";
 import { Profile } from "../../schemas/profile.js";
 import { itemArray as allItemsArray } from "../../items.js";
 
 const indicesToInclude = [7, 8]; 
-export const shopItemsArray = indicesToInclude.map(index => allItemsArray[index]);
-export const shopList = shopItemsArray.map(items => items.name);
+export const shopItemsArray = indicesToInclude.map((index) => allItemsArray[index]);
+export const shopList = shopItemsArray.map((items) => items?.name);
 // ['healing potion', 'greater healing potion']
 
 export default {
   data: new SlashCommandBuilder().setName('shop').setDescription('opens shop'),
-  async execute(interaction) {
+  async execute(interaction: ChatInputCommandInteraction) {
     const { user, guild } = interaction;
+
+    if (guild == null) 
+      return interaction.reply("user not in a server");
 
     const storedProfile = await Profile.findOne({
       userId: user.id,
@@ -38,7 +42,7 @@ export default {
       .setLabel('sell')
       .setStyle(ButtonStyle.Primary);
     const shopItems = shopList.join('\n');
-    const row = new ActionRowBuilder().addComponents(buyButton, sellButton);
+    const row = new ActionRowBuilder<ButtonBuilder>().addComponents(buyButton, sellButton);
 
     const embed = new EmbedBuilder()
       .setTitle(`Shop`)

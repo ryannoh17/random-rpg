@@ -1,4 +1,4 @@
-import { SlashCommandBuilder } from "discord.js";
+import { ChatInputCommandInteraction, SlashCommandBuilder } from "discord.js";
 import { Profile } from "../../schemas/profile.js";
 
 export default {
@@ -8,12 +8,15 @@ export default {
     .addUserOption((option) =>
       option.setName('target').setDescription('resets selected player')
     ),
-  async execute(interaction) {
+  async execute(interaction: ChatInputCommandInteraction) {
     const { user, guild } = interaction;
-    const selectedUser = interaction.options.getUser('target') || user;
 
+    if (guild == null)
+      return interaction.reply("user not in a server");
     if (user.id !== '449357416287567873')
       return interaction.reply('not an admin can not use');
+
+    const selectedUser = interaction.options.getUser('target') || user;
 
     const result = await Profile.updateOne(
       { userId: selectedUser.id, guildId: guild.id },
@@ -34,7 +37,7 @@ export default {
         maxExp: 100,
         monster: null,
         isFighting: false,
-        inventory: [[],[],[]],
+        inventory: [[], [], []],
         coins: 0,
       }
     );
