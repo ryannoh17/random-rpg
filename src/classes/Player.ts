@@ -1,8 +1,8 @@
 import { Profile } from '../schemas/profile.js';
-import { type ItemType } from '../schemas/item.js'
 import { type MonsterType } from '../schemas/monster.js';
 import { ChatInputCommandInteraction, EmbedBuilder, ButtonBuilder, ButtonStyle, ActionRowBuilder } from "discord.js";
-
+import { shopItemsArray } from "../commands/game/shop.js";
+import { Inventory } from './Inventory.js';
 
 export class Player {
   userID: string;
@@ -24,8 +24,7 @@ export class Player {
   maxExp: number;
   monster: MonsterType | null;
   isFighting: boolean;
-  inventory: ItemType[][];
-  coins: number;
+  inventory: Inventory;
 
   private constructor(
     userID: string,
@@ -47,8 +46,7 @@ export class Player {
     maxExp: number,
     monster: MonsterType | null,
     isFighting: boolean,
-    inventory: ItemType[][],
-    coins: number
+    inventory: Inventory,
   ) {
     this.userID = userID;
     this.tag = tag;
@@ -70,7 +68,6 @@ export class Player {
     this.monster = monster;
     this.isFighting = isFighting;
     this.inventory = inventory;
-    this.coins = coins;
   }
 
   // /**
@@ -131,109 +128,10 @@ export class Player {
       storedProfile.maxExp,
       storedProfile.monster,
       storedProfile.isFighting,
-      storedProfile.inventory,
-      storedProfile.coins
+      new Inventory(storedProfile.inventory, storedProfile.coins)
     );
 
     return newPlayer;
-  }
-
-  private async addItem(invIndex: number, itemToAdd: ItemType): Promise<void> {
-    let invSegment = this.inventory[invIndex];
-
-    if (!invSegment) throw new Error("invIndex out of inventory bounds");
-
-    let itemIndex = invSegment.findIndex((currItem) => currItem.id === itemToAdd.id);
-
-    if (itemIndex === -1) {
-      invSegment.push(itemToAdd);
-    } else {
-      if (invSegment[itemIndex]) {
-        invSegment[itemIndex].quantity += itemToAdd.quantity;
-      }
-    }
-
-  }
-
-  async addToInventory(itemsToAdd: ItemType[]): Promise<void> {
-    for (const currItem of itemsToAdd) {
-      switch (currItem.type) {
-        case "material":
-          this.addItem(0, currItem);
-          break;
-        case "potion":
-          this.addItem(1, currItem);
-          break;
-        case "equipment":
-          this.addItem(2, currItem);
-          break;
-      }
-    }
-  }
-
-  private mapInventorySection(sectionIndex: number) {
-    const sectionArray = this.inventory[sectionIndex]!.map((items) => {
-      if (items.quantity > 1) {
-        return `${items.name} x${items.quantity}`;
-      }
-      return items.name;
-    });
-
-    return sectionArray;
-  }
-
-  createInvEmbed() {
-    const coinAmount = this.coins;
-    
-
-    const embed = new EmbedBuilder()
-      .setTitle(`Inventory`)
-      .setThumbnail('https://i.stack.imgur.com/Fzh0w.png')
-      .addFields([
-        {
-          name: 'Coins',
-          value: `${coinAmount}`,
-        },
-        {
-          name: 'Materials',
-          value: `\u200B`,
-          inline: true,
-        },
-        {
-          name: 'Potions',
-          value: `\u200B`,
-          inline: true,
-        },
-        {
-          name: 'Equipment',
-          value: `\u200B`,
-          inline: true,
-        },
-      ]);
-
-    if (this.inventory[0]!.length > 0) {
-      embed.spliceFields(1, 1, {
-        name: 'Materials',
-        value: `${this.mapInventorySection(0)}`,
-        inline: true,
-      });
-    }
-    if (this.inventory[1]!.length > 0) {
-      embed.spliceFields(2, 1, {
-        name: 'Potions',
-        value: `${this.mapInventorySection(1)}`,
-        inline: true,
-      });
-    }
-    if (this.inventory[2]!.length > 0) {
-      embed.spliceFields(3, 1, {
-        name: 'Equipment',
-        value: `${this.mapInventorySection(2)}`,
-        inline: true,
-      });
-    }
-
-    return embed;
   }
 
   async savePlayer(): Promise<void> {
@@ -256,11 +154,12 @@ export class Player {
         maxExp: this.maxExp,
         monster: this.monster,
         isFighting: this.isFighting,
-        inventory: this.inventory,
-        coins: this.coins
+        inventory: this.inventory.items,
+        coins: this.inventory.coins
       }
     );
   }
+
 
   private createFightEmbed(monster: MonsterType) {
     const embed = new EmbedBuilder()

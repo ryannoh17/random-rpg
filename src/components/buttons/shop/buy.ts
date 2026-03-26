@@ -2,7 +2,8 @@ import {
   EmbedBuilder,
   ButtonBuilder,
   ButtonStyle,
-  ActionRowBuilder
+  ActionRowBuilder,
+  ButtonInteraction
 } from "discord.js";
 import { shopList } from "../../../commands/game/shop.js";
 
@@ -11,12 +12,12 @@ export default {
     name: 'buy',
   },
 
-  async execute(interaction) {
+  async execute(interaction: ButtonInteraction) {
     const list = [...shopList];
     list[0] = `**${list[0]}**`;
     const shopItems = list.join('\n');
 
-    const embed = EmbedBuilder.from(interaction.message.embeds[0]).spliceFields(1, 1,
+    const embed = EmbedBuilder.from(interaction.message!.embeds[0]!).spliceFields(1, 1,
       {
         name: '__Items__',
         value: `${shopItems}`,
@@ -39,7 +40,7 @@ export default {
       .setStyle(ButtonStyle.Primary);
 
 
-    const row = new ActionRowBuilder().addComponents(lastItem, nextItem, buyOne);
+    const row = new ActionRowBuilder<ButtonBuilder>().addComponents(lastItem, nextItem, buyOne);
 
     await interaction.update({
       embeds: [embed],

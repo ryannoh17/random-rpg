@@ -1,11 +1,11 @@
-import { EmbedBuilder } from "discord.js";
+import { ButtonInteraction, Client, EmbedBuilder } from "discord.js";
 import { Profile } from "../../schemas/profile.js";
 import { shopItemsArray } from "../../commands/game/shop.js";
 
-function getInvIndex(fields) {
+function getInvIndex(fields: string[]) {
   let invIndex = -1;
   for (let i = 1; i < fields.length; i++) {
-    if (fields[i].name.includes('_')) {
+    if (fields[i]!.name.includes('_')) {
       invIndex = i;
     }
   }
@@ -15,7 +15,7 @@ function getInvIndex(fields) {
   return invIndex;
 }
 
-function getShopEmbedIndex(fieldValue, shopItemList) {
+function getShopEmbedIndex(fieldValue, shopItemList: string[]) {
   if (!fieldValue) throw new Error('Field has no content');
   
   const shopIndex = shopItemList.findIndex((item) => item.includes('*'));
@@ -27,17 +27,17 @@ function getShopEmbedIndex(fieldValue, shopItemList) {
 
 // }
 
-export default (client) => {
-  client.buySome = async (interaction, num) => {
+export default (client: Client) => {
+  client.buySome = async (interaction: ButtonInteraction, num: number) => {
     const { user, guild, message } = interaction;
-    const oldEmbed = message.embeds[0];
+    const oldEmbed = message.embeds[0]!;
     const { fields } = oldEmbed;
 
     const storedProfile = await Profile.findOne({
       userId: user.id,
-      guildId: guild.id,
+      guildId: guild!.id,
     });
-    const { inventory, coins: playerCoins } = storedProfile;
+    const { inventory, coins } = storedProfile;
 
     const invIndex = getInvIndex();
     const { value, name } = fields[invIndex];
@@ -46,7 +46,7 @@ export default (client) => {
     const shopIndex = getShopEmbedIndex(value, shopItemList);
     const shopEmbedItemName = shopItemList[shopIndex];
 
-    const selectedItem = shopItemsArray.find((item) => item.name === shopEmbedItemName);
+    const selectedItem = shopItemsArray.find((item) => item!.name === shopEmbedItemName);
     const { price } = selectedItem;
 
     // bruh how do i efficiently find it in inventory
@@ -59,14 +59,14 @@ export default (client) => {
       invQuantity = 0;
     }
 
-    if (price > playerCoins) {
+    if (price > coins) {
       console.log('item costs too much');
       return null;
     }
 
     const newQuantity = invQuantity + num;
 
-    const coinCount = playerCoins - price * num;
+    const coinCount = coins - price * num;
     selectedItem.quantity = newQuantity;
 
     // turns invetory into list for embed

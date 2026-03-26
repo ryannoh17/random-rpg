@@ -13,7 +13,7 @@ export default {
       return interaction.reply("user not in a server");
     
     let player = await Player.load(user.id, guild.id);
-    const embed = player.createInvEmbed()
+    const embed = player.createInvEmbed();
 
     return interaction.reply({
       embeds: [embed],
