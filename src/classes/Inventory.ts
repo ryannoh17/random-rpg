@@ -108,7 +108,7 @@ export class Inventory {
   }
 
   // fields are the headers of sections in the embed
-  private getShopFieldIndex(fields: APIEmbedField[]) {
+  static getShopItemsFieldIndex(fields: APIEmbedField[]) {
     let invIndex = -1;
     for (let i = 1; i < fields.length; i++) {
       if (fields[i]!.name.includes('_')) {
@@ -121,94 +121,109 @@ export class Inventory {
     return invIndex;
   }
 
-  async buySome(interaction: ButtonInteraction, buyQuantity: number, coins: number) {
-    const { message } = interaction;
-    const oldEmbed = message.embeds[0]!;
-    const { fields } = oldEmbed;
-
-    const shopFieldIndex = this.getShopFieldIndex(fields);
-    const { name, value } = fields[shopFieldIndex] ?? (() => {
-      throw new Error(`field with index [ ${shopFieldIndex} ] does not exist`);
-    })();
-    const shopItemList = value.split('\n');
-
-    const shopItemIndex = shopItemList.findIndex((item) => item.includes('*'));
-    if (shopItemIndex === -1) throw new Error("ADD EXCEPTION HANDLING TO THIS")
-
-    const shopEmbedItemName = shopItemList[shopItemIndex];
-
-    const selectedItem = shopItemsArray.find((item) => item!.name === shopEmbedItemName);
-    const { price } = selectedItem ?? (() => {
-      throw new Error(`could not find item with name [ ${shopEmbedItemName} ] in [ shopItemsArray ]`)
-    })();
-
-    // bruh how do i efficiently find it in inventory
-    let { quantity: invQuantity } = this.items[shopFieldIndex - 1]!.find(
-      (item) => item.name === shopEmbedItemName
-    ) ?? { quantity: -1 };
-
-    if (invQuantity === -1) {
-      // maybe make it throw error
-      console.log('item does not exist in inventory');
-      invQuantity = 0;
+  static getCoinsFieldIndex(fields: APIEmbedField[]) {
+    let invIndex = -1;
+    for (let i = 1; i < fields.length; i++) {
+      if (fields[i]!.name === 'Coins') {
+        invIndex = i;
+      }
     }
 
+    if (invIndex === -1) throw new Error('No [ Coins ] field exists');
+
+    return invIndex;
+  }
+
+  // CHANGE THIS SHIT U DONT NEED IT KINDA
+  // should just have buttons change a number than have a button that takes that number
+  // and adds or subtracts that from inventory (confirm button)
+  /*
+  get embed from button interaction
+  find the item the indicator is on and increment it by x
+  get player coins from embed
+  calculate new coin count and show on embed with new item count
+  */
+  static async buySome(interaction: ButtonInteraction, buyQuantity: number) {
+    const oldEmbed = interaction.message.embeds[0]!;
+    const { fields } = oldEmbed;
+
+    // get [ items ] from shop embed
+    const shopItemsFieldIndex = this.getShopItemsFieldIndex(fields);
+    const { name, value } = fields[shopItemsFieldIndex] ?? (() => {
+      throw new Error(`field with index [ ${shopItemsFieldIndex} ] does not exist`);
+    })();
+    const shopItemsList = value.split('\n');
+
+    // get [ selected shop item name ] and [ new item count ]
+    const shopItemIndex = shopItemsList.findIndex((item) => item.includes('*'));
+    if (shopItemIndex === -1) throw new Error("ADD EXCEPTION HANDLING TO THIS")
+    const shopItemStr = shopItemsList[shopItemIndex] ?? (() => { 
+      throw new Error(`no shop item exists at index: [ ${shopItemIndex} ]`)
+    })();
+
+    const quantityRegex = /x\d+/g;
+    const regexRes = quantityRegex.exec(shopItemStr);
+    let itemCount = 0;
+    let shopItemName = shopItemStr.slice(2, -2);
+    if (regexRes != null) {
+      if (regexRes.length > 1) {
+        console.log(`regexRes found more than 1 quantity, result:\n${regexRes}`)
+      }
+
+      itemCount = parseInt(regexRes[0].substring(1))
+      shopItemName = shopItemStr.substring(0, regexRes.index - 1);
+    }
+    itemCount += buyQuantity;
+
+    // find shop [ item cost ]
+    const selectedItem = shopItemsArray.find((item) => item!.name === shopItemName);
+    const { price } = selectedItem ?? (() => {
+      throw new Error(`could not find item with name [ ${shopItemName} ] in [ shopItemsArray ]`)
+    })();
+
+    // // bruh how do i efficiently find it in inventory
+    // let { quantity: invQuantity } = this.items[shopFieldIndex - 1]!.find(
+    //   (item) => item.name === shopEmbedItemName
+    // ) ?? { quantity: -1 };
+
+    // if (invQuantity === -1) {
+    //   // maybe make it throw error
+    //   console.log('item does not exist in inventory');
+    //   invQuantity = 0;
+    // }
+
+    // get player [ coin count ] from embed
+    const coinsFieldIndex = this.getCoinsFieldIndex(fields);
+    const { value: coinStr } = fields[coinsFieldIndex] ?? (() => {
+      throw new Error(`field with index [ ${coinsFieldIndex} ] does not exist`);
+    })();
+    let coins = parseInt(coinStr);
+
+    // change this so that it just disables confirm button when greater
     if (price > coins) {
       // figure something out the player can see
       console.log('item costs too much');
       return null;
     }
 
-    const newQuantity = invQuantity + buyQuantity;
-
+    // adjusted coin count to be displayed in embed
     const coinCount = coins - price * buyQuantity;
-    selectedItem.quantity = newQuantity;
+    
+    shopItemsList[shopItemIndex] = `**${shopItemName} x${itemCount}**`;
 
-    // turns invetory into list for embed
-    const nameList = this.items[shopFieldIndex - 1]!.map((item) => {
-      if (item.quantity > 1) {
-        return `${item.name} x${item.quantity}`;
-      }
-      return item.name;
-    });
+    const nameList = shopItemsList.join('\n');
 
-    nameList[shopItemIndex] = `**${nameList[shopItemIndex]}**`;
-    let newItems;
-    let newEmbed;
+    const newEmbed = EmbedBuilder.from(oldEmbed)
+      .spliceFields(shopItemsFieldIndex, 1, {
+        name: `${name}`,
+        value: `${nameList}`,
+        inline: true,
+      })
+      .spliceFields(0, 1, {
+        name: 'Coins',
+        value: `${coinCount}`,
+      });
 
-    if (nameList.length > 0) {
-      newItems = nameList.join('\n');
-
-      newEmbed = EmbedBuilder.from(oldEmbed)
-        .spliceFields(shopFieldIndex, 1, {
-          name: `${name}`,
-          value: `${newItems}`,
-          inline: true,
-        })
-        .spliceFields(0, 1, {
-          name: 'Coins',
-          value: `${coinCount}`,
-        });
-    } else {
-      newEmbed = EmbedBuilder.from(oldEmbed)
-        .spliceFields(shopFieldIndex, 1, {
-          name: `${name}`,
-          value: `\u200B`,
-          inline: true,
-        })
-        .spliceFields(0, 1, {
-          name: 'Coins',
-          value: `${coinCount}`,
-        });
-    }
-
-    // await Profile.findOneAndUpdate(
-    //   { _id: storedProfile._id },
-    //   {
-    //     inventory,
-    //     coins: coinCount,
-    //   }
-    // );
 
     coins = coinCount;
 

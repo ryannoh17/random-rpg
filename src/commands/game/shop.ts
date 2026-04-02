@@ -41,6 +41,7 @@ export default {
       .setCustomId('sell')
       .setLabel('sell')
       .setStyle(ButtonStyle.Primary);
+    
     const shopItems = shopList.join('\n');
     const row = new ActionRowBuilder<ButtonBuilder>().addComponents(buyButton, sellButton);
 
@@ -65,3 +66,6 @@ export default {
     });
   },
 };
+
+// HOW DO IS sEND INFO TO THE BUTTONSSSSS
+// ok just change the number and add a confirm button
