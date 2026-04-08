@@ -38,7 +38,8 @@ export default {
       .setCustomId('buyOne')
       .setLabel('one')
       .setStyle(ButtonStyle.Primary);
-
+    
+    // add buy ten and buy confirm set to disabled for to row
 
     const row = new ActionRowBuilder<ButtonBuilder>().addComponents(lastItem, nextItem, buyOne);
 

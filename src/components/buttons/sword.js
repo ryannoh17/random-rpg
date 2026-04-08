@@ -29,8 +29,8 @@ export default {
     } = monster;
 
     const row = message.components[0];
-    const newSwordButton = ButtonBuilder.from(button).setDisabled(true);
-    const swordButton = ButtonBuilder.from(button).setDisabled(false);
+    const offSwordButton = ButtonBuilder.from(button).setDisabled(true);
+    const onSwordButton = ButtonBuilder.from(button).setDisabled(false);
 
     // --- WHEN MONSTER DIES ---
 
@@ -42,7 +42,7 @@ export default {
       // maybe change this later since updating db twice is bad
       await client.checkExp(user.id, guild.id);
 
-      row.components[0] = newSwordButton;
+      row.components[0] = offSwordButton;
 
       const newEmbed = EmbedBuilder.from(oldEmbed)
         .spliceFields(1, 1, {
@@ -77,7 +77,7 @@ export default {
         true
       );
       row.components[2] = newNextButton;
-      row.components[0] = newSwordButton;
+      row.components[0] = offSwordButton;
 
       const playerHit = EmbedBuilder.from(oldEmbed).spliceFields(1, 1, {
         name: `${monsterName}`,
@@ -148,7 +148,7 @@ export default {
         inline: true,
       });
 
-      row.components[0] = newSwordButton;
+      row.components[0] = offSwordButton;
 
       await interaction
         .update({
@@ -157,7 +157,7 @@ export default {
         })
         .then(() => {
           setTimeout(() => {
-            row.components[0] = swordButton;
+            row.components[0] = onSwordButton;
 
             interaction.editReply({
               embeds: [monsterHit],

@@ -11,6 +11,7 @@ export class Inventory {
     this.coins = coins;
   }
 
+  // adds specified quantity of items to a section of the inventory
   private async addItem(invIndex: number, itemToAdd: ItemType): Promise<void> {
     let invSegment = this.items[invIndex];
 
@@ -27,6 +28,7 @@ export class Inventory {
     }
   }
 
+  // loops through all items in array and adds to inventory in the correct segments
   async addToInventory(itemsToAdd: ItemType[]): Promise<void> {
     for (const currItem of itemsToAdd) {
       switch (currItem.type) {
@@ -43,7 +45,8 @@ export class Inventory {
     }
   }
 
-  private mapInventorySection(sectionIndex: number) {
+  // turns inventory items into a string array so it can be printed
+  private mapInventorySection(sectionIndex: number): string[] {
     const sectionArray = this.items[sectionIndex]!.map((item) => {
       if (item.quantity > 1) {
         return `${item.name} x${item.quantity}`;
@@ -54,8 +57,8 @@ export class Inventory {
     return sectionArray;
   }
 
-  createInvEmbed(coins: number) {
-    const coinAmount = coins;
+  createInvEmbed() {
+    const coinAmount = this.coins;
 
     const embed = new EmbedBuilder()
       .setTitle(`Inventory`)
@@ -193,9 +196,8 @@ export class Inventory {
     // }
 
     // get player [ coin count ] from embed
-    const coinsFieldIndex = this.getCoinsFieldIndex(fields);
-    const { value: coinStr } = fields[coinsFieldIndex] ?? (() => {
-      throw new Error(`field with index [ ${coinsFieldIndex} ] does not exist`);
+    const { value: coinStr } = fields[0] ?? (() => {
+      throw new Error(`field with index [ 0 ] does not exist`);
     })();
     let coins = parseInt(coinStr);
 
@@ -224,10 +226,6 @@ export class Inventory {
         value: `${coinCount}`,
       });
 
-
-    coins = coinCount;
-
     return newEmbed;
   }
-
 }

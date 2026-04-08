@@ -11,7 +11,7 @@ import { itemArray as allItemsArray } from "../../items.js";
 
 const indicesToInclude = [7, 8]; 
 export const shopItemsArray = indicesToInclude.map((index) => allItemsArray[index]);
-export const shopList = shopItemsArray.map((items) => items?.name);
+export const shopList = shopItemsArray.map((items) => items!.name);
 // ['healing potion', 'greater healing potion']
 
 export default {
