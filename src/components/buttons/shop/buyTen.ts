@@ -3,11 +3,11 @@ import { Inventory } from "../../../classes/Inventory.js";
 
 export default {
     data: {
-      name: 'buyOne',
+      name: 'buyTen',
     },
   
     async execute(interaction: ButtonInteraction) {
-      const embed = await Inventory.buySome(interaction, 1);
+      const embed = await Inventory.buySome(interaction, 10);
   
       if (!embed) {
         await interaction.deferUpdate();
