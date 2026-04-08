@@ -1,25 +1,23 @@
-import { ButtonBuilder, ButtonStyle, ActionRowBuilder } from "discord.js";
+import { ButtonBuilder, ButtonStyle, ActionRowBuilder, ButtonInteraction } from "discord.js";
 import { Profile } from "../../../schemas/profile.js";
+import { Player } from "../../../classes/Player.js";
 
 export default {
   data: {
     name: 'sell',
   },
 
-  async execute(interaction, client) {
+  async execute(interaction: ButtonInteraction) {
     const { user, guild } = interaction;
 
-    const storedProfile = await Profile.findOne({
-      userId: user.id,
-      guildId: guild.id,
-    });
+    if (!guild) return interaction.reply('user not in server');
 
-    const { inventory, coins } = storedProfile;
+    let player = await Player.load(user.id, guild.id);
 
-    const invSections = await client.giveInvSections(inventory, 0);
-    const embed = await client.createInvEmbed(inventory, invSections, coins);
+    const embed = player.inventory.createInvEmbed();
 
-    embed.data.fields[1].name = `__${embed.data.fields[1].name}__`;
+    // uh maybe change this
+    embed.data.fields![1]!.name = `__${embed.data.fields![1]!.name}__`;
 
     const nextItem = new ButtonBuilder()
       .setCustomId('nextItem')
@@ -53,8 +51,12 @@ export default {
       .setCustomId('selectEquipmentSeg')
       .setLabel('Equipment')
       .setStyle(ButtonStyle.Primary);
-    const rowOne = new ActionRowBuilder().addComponents(materials, potions, equipment);
-    const rowTwo = new ActionRowBuilder().addComponents(
+    const rowOne = new ActionRowBuilder<ButtonBuilder>().addComponents(
+      materials, 
+      potions, 
+      equipment
+    );
+    const rowTwo = new ActionRowBuilder<ButtonBuilder>().addComponents(
       lastItem,
       nextItem,
       sellOne,
