@@ -7,7 +7,7 @@ export default {
     },
   
     async execute(interaction: ButtonInteraction) {
-      const embed = await Inventory.buySome(interaction, 10);
+      const embed = Inventory.buySome(interaction, 10);
   
       if (!embed) {
         await interaction.deferUpdate();

@@ -134,7 +134,7 @@ export class Player {
     return newPlayer;
   }
 
-  async savePlayer(): Promise<void> {
+  async save(): Promise<void> {
     await Profile.updateOne(
       { userId: this.userID, guildId: this.guildID },
       {
@@ -201,7 +201,7 @@ export class Player {
     const monsterEmbed = this.createFightEmbed(monster);
 
     this.monster = monster
-    this.savePlayer();
+    this.save();
 
     const swordButton = new ButtonBuilder()
       .setCustomId('sword')

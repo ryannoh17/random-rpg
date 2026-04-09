@@ -56,7 +56,7 @@ export default {
     }
 
     try {
-      await player.savePlayer();
+      await player.save();
     } catch (error) {
       console.error(error);
     }

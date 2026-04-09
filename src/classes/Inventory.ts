@@ -1,6 +1,7 @@
 import { EmbedBuilder, type APIEmbedField, ButtonInteraction } from "discord.js";
 import { shopItemsArray } from "../commands/game/shop.js";
 import { type ItemType } from "../schemas/item.js"
+import { itemArray as allItemsArray } from "../items.js";
 
 export class Inventory {
   items: ItemType[][];
@@ -124,6 +125,7 @@ export class Inventory {
     return invIndex;
   }
 
+  // MIGHT BE UNNEEDED
   static getCoinsFieldIndex(fields: APIEmbedField[]) {
     let invIndex = -1;
     for (let i = 1; i < fields.length; i++) {
@@ -146,7 +148,7 @@ export class Inventory {
   get player coins from embed
   calculate new coin count and show on embed with new item count
   */
-  static async buySome(interaction: ButtonInteraction, buyQuantity: number) {
+  static buySome(interaction: ButtonInteraction, buyQuantity: number) {
     const oldEmbed = interaction.message.embeds[0]!;
     const { fields } = oldEmbed;
 
@@ -160,7 +162,7 @@ export class Inventory {
     // get [ selected shop item name ] and [ new item count ]
     const shopItemIndex = shopItemsList.findIndex((item) => item.includes('*'));
     if (shopItemIndex === -1) throw new Error("ADD EXCEPTION HANDLING TO THIS")
-    const shopItemStr = shopItemsList[shopItemIndex] ?? (() => { 
+    const shopItemStr = shopItemsList[shopItemIndex] ?? (() => {
       throw new Error(`no shop item exists at index: [ ${shopItemIndex} ]`)
     })();
 
@@ -210,7 +212,7 @@ export class Inventory {
 
     // adjusted coin count to be displayed in embed
     const coinCount = coins - price * buyQuantity;
-    
+
     shopItemsList[shopItemIndex] = `**${shopItemName} x${itemCount}**`;
 
     const nameList = shopItemsList.join('\n');
@@ -228,4 +230,102 @@ export class Inventory {
 
     return newEmbed;
   }
+
+  // this should be changed to be similar to buy some and sell confirm should become
+  // similar to this function
+
+  // MAKE SURE TO DISABLE SELLING MORE THEN ALL QUANTITIES (might be alr done)
+
+  // THIS SHIT DOES NOT WORK PLS FIXXXX (only modified to be compilable)
+  static async sellSome(interaction: ButtonInteraction, sellQuantity?: number) {
+    // CODE DOES NOT WORK FOR LAST ITEM PLS FIX (i think its fixed)
+    const { message } = interaction;
+
+    const oldEmbed = message.embeds[0]!;
+    const { fields } = oldEmbed;
+    const invIndex = Inventory.getShopItemsFieldIndex(fields);
+
+    const { value, name } = fields[invIndex]!;
+
+    // why?????
+    if (value.length <= 5) {
+      return null;
+    }
+
+    // find selected item (this could be a function hmmmmm)
+    const itemList = value.split('\n');
+    let index = itemList.findIndex((item) => item.includes('*'))
+    const selectedItemStr = itemList[index] ?? (() => {
+      throw new Error(`no shop item exists at index: [ ${index} ]`)
+    })()
+
+    const quantityRegex = /x\d+/g;
+    const regexRes = quantityRegex.exec(selectedItemStr);
+    let itemCount = 0;
+    let selectedItemName = selectedItemStr.slice(2, -2);
+    if (regexRes != null) {
+      if (regexRes.length > 1) {
+        console.log(`regexRes found more than 1 quantity, result:\n${regexRes}`)
+      }
+
+      itemCount = parseInt(regexRes[0].substring(1))
+      selectedItemName = selectedItemStr.substring(0, regexRes.index - 1);
+    }
+    const selectedItem = allItemsArray.find((item) => item!.name === selectedItemName);
+    const { price } = selectedItem ?? (() => {
+      throw new Error(`could not find item with name [ ${selectedItemName} ] in [ allItemsArray ]`)
+    })();
+
+    const { value: coinStr } = fields[0] ?? (() => {
+      throw new Error(`field with index [ 0 ] does not exist`);
+    })();
+    let coinCount = parseInt(coinStr);
+
+    // checks to see if your selling all of selected item
+    if (!sellQuantity || (itemCount - sellQuantity) <= 0) {
+      coinCount += selectedItem.price * itemCount;
+      itemList.splice(index, 1);
+      if (index === itemList.length - 1) {
+        index = itemList.length - 2;
+      }
+    } else {
+      coinCount += selectedItem.price * sellQuantity;
+      selectedItem.quantity = itemCount - sellQuantity;
+    }
+
+    itemList[index] = `**${itemList[index]}**`;
+    let newItems;
+    let newEmbed;
+
+    if (itemList.length > 0) {
+      newItems = itemList.join('\n');
+
+      newEmbed = EmbedBuilder.from(oldEmbed)
+        .spliceFields(invIndex, 1, {
+          name: `${name}`,
+          value: `${newItems}`,
+          inline: true,
+        })
+        .spliceFields(0, 1, {
+          name: 'Coins',
+          value: `${coinCount}`,
+        });
+    } else {
+      newEmbed = EmbedBuilder.from(oldEmbed)
+        .spliceFields(invIndex, 1, {
+          name: `${name}`,
+          value: `\u200B`,
+          inline: true,
+        })
+        .spliceFields(0, 1, {
+          name: 'Coins',
+          value: `${coinCount}`,
+        });
+    }
+
+    // save function used to be here
+
+    return newEmbed;
+  }
+
 }

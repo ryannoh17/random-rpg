@@ -1,4 +1,4 @@
-import { EmbedBuilder, type ButtonInteraction } from "discord.js";
+import { type ButtonInteraction } from "discord.js";
 import { Inventory } from "../../../classes/Inventory.js";
 import { shopItemsArray, shopList } from "../../../commands/game/shop.js";
 import { Player } from "../../../classes/Player.js";
@@ -80,7 +80,7 @@ export default {
 
     player.inventory.coins -= totalCost;
     player.inventory.addToInventory(shopItemsToAdd);
-    player.savePlayer();
+    player.save();
     
     const newEmbed = player.inventory.createInvEmbed();
 

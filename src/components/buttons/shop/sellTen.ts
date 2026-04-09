@@ -1,10 +1,13 @@
+import type { ButtonInteraction } from "discord.js";
+import { Inventory } from "../../../classes/Inventory.js";
+
 export default {
   data: {
     name: 'sellTen',
   },
 
-  async execute(interaction, client) {
-    const embed = await client.sellSome(interaction, 10);
+  async execute(interaction: ButtonInteraction) {
+    const embed = await Inventory.sellSome(interaction, 10);
 
     if (!embed) {
       await interaction.deferUpdate();
