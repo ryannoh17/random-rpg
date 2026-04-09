@@ -1,6 +1,6 @@
 import { type ButtonInteraction } from "discord.js";
 import { Inventory } from "../../../classes/Inventory.js";
-import { shopItemsArray, shopList } from "../../../commands/game/shop.js";
+import { shopItemsArray } from "../../../commands/game/shop.js";
 import { Player } from "../../../classes/Player.js";
 import type { ItemType } from "../../../schemas/item.js";
 
