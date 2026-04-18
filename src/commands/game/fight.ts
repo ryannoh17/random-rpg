@@ -74,6 +74,6 @@ export default {
     // }
 
     const spawnedMonster = Monster.spawn(selectedArea!);
-    player.fightMonster(interaction, spawnedMonster);
+    return player.fightMonster(interaction, spawnedMonster);
   },
 };

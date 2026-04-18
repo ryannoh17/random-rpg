@@ -1,11 +1,11 @@
-import { ActionRowBuilder, ButtonBuilder, ButtonStyle } from "discord.js";
+import { ActionRowBuilder, ButtonBuilder, ButtonInteraction, ButtonStyle } from "discord.js";
 
 export default {
   data: {
     name: 'potions',
   },
 
-  async execute(interaction) {
+  async execute(interaction: ButtonInteraction) {
     const { components } = interaction.message;
 
     const healButton = new ButtonBuilder()
@@ -23,8 +23,8 @@ export default {
       .setLabel('damage')
       .setStyle(ButtonStyle.Primary);
 
-    const row = components[0];
-    const newRow = new ActionRowBuilder().addComponents(
+    const row = components[0]!;
+    const newRow = new ActionRowBuilder<ButtonBuilder>().addComponents(
       healButton,
       greaterHealButton,
       damageButton

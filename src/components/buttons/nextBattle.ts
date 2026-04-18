@@ -1,4 +1,4 @@
-import { ButtonBuilder } from "discord.js";
+import { ButtonBuilder, ButtonInteraction } from "discord.js";
 import { Profile } from "../../schemas/profile.js";
 
 export default {
@@ -6,7 +6,7 @@ export default {
     name: "nextBattle",
   },
 
-  async execute(interaction, client) {
+  async execute(interaction: ButtonInteraction, client) {
     const { message } = interaction;
     const { title } = message.embeds[0];
     const { user, guild } = interaction;

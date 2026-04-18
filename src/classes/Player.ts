@@ -1,8 +1,7 @@
 import { Profile } from '../schemas/profile.js';
-import { type MonsterType } from '../schemas/monster.js';
 import { ChatInputCommandInteraction, EmbedBuilder, ButtonBuilder, ButtonStyle, ActionRowBuilder } from "discord.js";
-import { shopItemsArray } from "../commands/game/shop.js";
 import { Inventory } from './Inventory.js';
+import type { Monster } from './monster.js';
 
 export class Player {
   userID: string;
@@ -22,7 +21,7 @@ export class Player {
   level: number;
   exp: number;
   maxExp: number;
-  monster: MonsterType | null;
+  monster: Monster | null;
   isFighting: boolean;
   inventory: Inventory;
 
@@ -44,7 +43,7 @@ export class Player {
     level: number,
     exp: number,
     maxExp: number,
-    monster: MonsterType | null,
+    monster: Monster | null,
     isFighting: boolean,
     inventory: Inventory,
   ) {
@@ -70,28 +69,6 @@ export class Player {
     this.inventory = inventory;
   }
 
-  // /**
-  //  * creates a new Player profile into the database
-  //  *
-  //  * @param userID - ID specific to each user
-  //  * @param tag - name of the user
-  //  * @param guildID - ID specific to each server
-  //  * @returns - 1 if a new player profile is create 0 otherwise
-  //  */
-  // static async create(userID: number, tag: string, guildID: number): Promise<number> {
-  //     const storedProfile = await Profile.findOne({
-  //         userId: userID,
-  //         guildId: guildID,
-  //     });
-
-  //     if (storedProfile) return 0;
-
-  //     const newProfile = await Profile.create(
-  //       { userID: userID, tag: tag, guildID: guildID }
-  //     );
-
-  //     return 1;
-  // }
 
   /**
    * loads the player if they exist within the database
@@ -161,7 +138,7 @@ export class Player {
   }
 
 
-  private createFightEmbed(monster: MonsterType) {
+  private createFightEmbed(monster: Monster) {
     const embed = new EmbedBuilder()
       .setTitle(`${monster.zone}`)
       .setThumbnail('https://i.stack.imgur.com/Fzh0w.png')
@@ -197,11 +174,10 @@ export class Player {
     return embed;
   };
 
-  async fightMonster(interaction: ChatInputCommandInteraction, monster: MonsterType) {
+  async fightMonster(interaction: ChatInputCommandInteraction, monster: Monster) {
     const monsterEmbed = this.createFightEmbed(monster);
 
     this.monster = monster
-    this.save();
 
     const swordButton = new ButtonBuilder()
       .setCustomId('sword')
@@ -224,11 +200,49 @@ export class Player {
       nextButton
     );
 
-    return interaction.reply({
+    interaction.reply({
       embeds: [monsterEmbed],
       components: [row],
     });
 
+    await this.save();
+  }
+
+
+  addExp(expPoints: number) {
+    this.exp += expPoints;
+
+    const leftover = this.exp - this.maxExp;
+    if (leftover >= 0) {
+      const newLevel = this.level + 1;
+      this.level = newLevel;
+      this.statPoints += 1;
+      this.maxExp = newLevel * 100;
+      this.strength += 1;
+      this.maxHealth += 2;
+      this.exp = leftover
+    };
+  }
+
+
+  die() {
+    this.maxHealth = 100
+    this.health = 100
+    this.maxMana = 0
+    this.mana = 0
+    this.strength = 10
+    this.stamina = 5
+    this.defense = 0
+    this.wisdom = 0
+    this.intelligence = 0
+    this.agility = 0
+    this.statPoints = 0
+    this.level = 1
+    this.exp = 0
+    this.maxExp = 100
+    this.monster = null
+    this.isFighting = false
+    this.inventory = new Inventory([[], [], []], 0);
   }
 }
 

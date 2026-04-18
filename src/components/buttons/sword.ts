@@ -1,26 +1,27 @@
-import { EmbedBuilder, ButtonBuilder } from "discord.js";
+import { EmbedBuilder, ButtonBuilder, ButtonInteraction, MessageComponentInteraction, type MessageActionRowComponent, ButtonComponent, ActionRowBuilder } from "discord.js";
 import { Profile } from "../../schemas/profile.js";
+import { Player } from "../../classes/Player.js";
 
 export default {
   data: {
     name: 'sword',
   },
 
-  async execute(interaction, client) {
+  async execute(interaction: ButtonInteraction) {
     const { user, guild, message, component: button } = interaction;
 
-    const storedProfile = await Profile.findOne({
-      userId: user.id,
-      guildId: guild.id,
-    });
+    let player = await Player.load(user.id, guild!.id);
 
-    const oldEmbed = message.embeds[0];
+    const oldEmbed = message.embeds[0]!;
 
-    const { monster, _id: dbId, maxHealth: playerMaxHealth } = storedProfile;
-    let { health: playerHealth } = storedProfile;
+    const { maxHealth: playerMaxHealth } = player;
+    let { monster } = player;
 
-    monster.health -= storedProfile.strength;
-    playerHealth -= monster.attack;
+    if (!monster) throw new Error(`monster does not exist (how?)`);
+
+    monster.health -= player.strength;
+    player.health -= monster.attack;
+    const { health: playerHealth } = player;
 
     const {
       maxHealth: monsterMaxHealth,
@@ -28,21 +29,21 @@ export default {
       health: monsterHealth,
     } = monster;
 
-    const row = message.components[0];
+    const row = message.components[0]!;
     const offSwordButton = ButtonBuilder.from(button).setDisabled(true);
     const onSwordButton = ButtonBuilder.from(button).setDisabled(false);
+    let actionRowBuild = ActionRowBuilder.from(row);
 
     // --- WHEN MONSTER DIES ---
 
     if (monsterHealth <= 0) {
-      const newExp = storedProfile.exp + 30;
-      monster.health = monsterMaxHealth;
+      player.addExp(30);
+      player.inventory.addToInventory(monster.drops);
+      player.isFighting = false;
+      monster = null;
 
-      await client.addToInv(storedProfile.inventory, monster.drops, dbId);
-      // maybe change this later since updating db twice is bad
-      await client.checkExp(user.id, guild.id);
-
-      row.components[0] = offSwordButton;
+      actionRowBuild.components[0] = offSwordButton;
+      const newRow = new ActionRowBuilder<ButtonBuilder>(actionRowBuild);
 
       const newEmbed = EmbedBuilder.from(oldEmbed)
         .spliceFields(1, 1, {
@@ -58,26 +59,16 @@ export default {
 
       await interaction.update({
         embeds: [newEmbed],
-        components: [row],
+        components: [newRow],
       });
-
-      await Profile.findByIdAndUpdate(
-        { _id: dbId },
-        {
-          exp: newExp,
-          isFighting: false,
-          monster,
-        }
-      );
 
       // --- WHEN PLAYER DIES ---
 
     } else if (playerHealth <= 0) {
-      const newNextButton = ButtonBuilder.from(row.components[2]).setDisabled(
-        true
-      );
-      row.components[2] = newNextButton;
-      row.components[0] = offSwordButton;
+      const newNextButton = ButtonBuilder.from(row.components[2] as ButtonComponent).setDisabled(true);
+      actionRowBuild.components[0] = offSwordButton;
+      actionRowBuild.components[2] = newNextButton;
+      const newRow = new ActionRowBuilder<ButtonBuilder>(actionRowBuild);
 
       const playerHit = EmbedBuilder.from(oldEmbed).spliceFields(1, 1, {
         name: `${monsterName}`,
@@ -99,7 +90,7 @@ export default {
       await interaction
         .update({
           embeds: [playerHit],
-          components: [row],
+          components: [newRow],
         })
         .then(() => {
           setTimeout(() => {
@@ -109,29 +100,7 @@ export default {
           }, 750);
         });
 
-      await Profile.findByIdAndUpdate(
-        { _id: dbId },
-        {
-          maxHealth: 100,
-          health: 100,
-          maxMana: 0,
-          mana: 0,
-          strength: 10,
-          stamina: 5,
-          defense: 0,
-          wisdom: 0,
-          intelligence: 0,
-          agility: 0,
-          statPoints: 0,
-          level: 1,
-          exp: 0,
-          maxExp: 100,
-          monster: null,
-          isFighting: false,
-          inventory: [[], [], []],
-          coins: 0
-        }
-      );
+      player.die();
 
       // --- DEFAULT ---
 
@@ -148,32 +117,29 @@ export default {
         inline: true,
       });
 
-      row.components[0] = offSwordButton;
+      actionRowBuild.components[0] = offSwordButton;
+      let newRow = new ActionRowBuilder<ButtonBuilder>(actionRowBuild);
 
       await interaction
         .update({
           embeds: [playerHit],
-          components: [row],
+          components: [newRow],
         })
         .then(() => {
           setTimeout(() => {
-            row.components[0] = onSwordButton;
+            actionRowBuild.components[0] = onSwordButton;
+            newRow = new ActionRowBuilder<ButtonBuilder>(actionRowBuild);
 
             interaction.editReply({
               embeds: [monsterHit],
-              components: [row],
+              components: [newRow],
             });
           }, 750);
         });
 
-      await Profile.findByIdAndUpdate(
-        { _id: dbId },
-        {
-          isFighting: true,
-          monster,
-          health: playerHealth,
-        }
-      );
+      player.isFighting = true;
     }
+
+    return await player.save();
   },
 };

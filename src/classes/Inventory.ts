@@ -13,7 +13,7 @@ export class Inventory {
   }
 
   // adds specified quantity of items to a section of the inventory
-  private async addItem(invIndex: number, itemToAdd: ItemType): Promise<void> {
+  private addItem(invIndex: number, itemToAdd: ItemType): void {
     let invSegment = this.items[invIndex];
 
     if (!invSegment) throw new Error("invIndex out of inventory bounds");
@@ -30,7 +30,7 @@ export class Inventory {
   }
 
   // loops through all items in array and adds to inventory in the correct segments
-  async addToInventory(itemsToAdd: ItemType[]): Promise<void> {
+  addToInventory(itemsToAdd: ItemType[]): void {
     for (const currItem of itemsToAdd) {
       switch (currItem.type) {
         case "material":

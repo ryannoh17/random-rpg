@@ -1,3 +1,4 @@
+import type { ItemType } from "../schemas/item.js";
 import type { MonsterType } from "../schemas/monster.js";
 
 export const MonsterList = [];
@@ -12,7 +13,7 @@ export class Monster {
   maxHealth: number;
   health: number;
   attack: number;
-  drops: string[];
+  drops: ItemType[];
   level: number;
   zone: "Dummy" | "Sunlit Meadow" | "Greenwood";
 
@@ -21,7 +22,7 @@ export class Monster {
     maxHealth: number,
     health: number,
     attack: number,
-    drops: string[],
+    drops: ItemType[],
     level: number,
     zone: "Dummy" | "Sunlit Meadow" | "Greenwood"
   ) {
