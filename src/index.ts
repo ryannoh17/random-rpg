@@ -12,7 +12,9 @@ import commandHandler from "./functions/handlers/commandHandler.js";
 import eventHandler from "./functions/handlers/eventHandler.js";
 import componentHandler from "./functions/handlers/componentHandler.js";
 import type { commandFile, componentFile, functionFile } from "./types.js";
-import { config } from "dotenv"
+import * as dotenv from "dotenv"
+
+dotenv.config();
 
 declare module "discord.js" {
   interface Client {

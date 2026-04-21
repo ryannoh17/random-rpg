@@ -49,7 +49,7 @@ export default {
     let player: Player;
     try {
       player = await Player.load(userID, guildID);
-      player.addToInventory([selectedItem]);
+      player.inventory.addToInventory([selectedItem]);
     } catch (error) {
       console.error(error);
       return await interaction.reply("user does not exist");
