@@ -44,5 +44,7 @@
 
     "resolveJsonModule": true,
     "esModuleInterop": true,
-  }
+  },
+  "include": ["src/**/*"],
+  "exclude": ["old/**/*"]
 }
