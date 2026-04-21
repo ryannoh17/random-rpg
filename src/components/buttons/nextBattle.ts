@@ -1,55 +1,38 @@
-import { ButtonBuilder, ButtonInteraction } from "discord.js";
-import { Profile } from "../../schemas/profile.js";
+import { ActionRowBuilder, ButtonBuilder, ButtonComponent, ButtonInteraction } from "discord.js";
+import { Monster } from "../../classes/monster.js";
+import { Player } from "../../classes/Player.js";
 
 export default {
   data: {
     name: "nextBattle",
   },
 
-  async execute(interaction: ButtonInteraction, client) {
+  async execute(interaction: ButtonInteraction) {
     const { message } = interaction;
-    const { title } = message.embeds[0];
+    const { title } = message.embeds[0]!;
     const { user, guild } = interaction;
-    let monster;
 
-    switch (title) {
-      case 'Sunlit Meadows': {
-        monster = await client.fromSLM();
-        break;
-      }
-      case "Greenwood": {
-        monster = await client.fromGNW();
-        break;
-      }
-      default:
-        break;
-    }
+    if (!title) throw new Error(`Theres no title to grab to spawn a new monster`);
+    
+    const monster = Monster.spawn(title);
 
-    const storedProfile = await Profile.findOneAndUpdate(
-      { userId: user.id, guildId: guild.id },
-      { monster },
-    );
+    let player = await Player.load(user.id, guild!.id);
+    player.monster = monster;
 
-    if (storedProfile.monster.name === 'Dummy') {
-      monster = storedProfile.monster;
-    }
+    const monsterEmbed = player.createFightEmbed();
 
-    const monsterEmbed = await client.createFightEmbed(
-      monster,
-      user.username,
-      storedProfile,
-      title
-    );
+    const row = message.components[0]!;
+    const newAttackButton = ButtonBuilder.from(
+      row.components[0]! as ButtonComponent
+    ).setDisabled(false);
+    let actionRowBuild = ActionRowBuilder.from(row);
+    actionRowBuild.components[0] = newAttackButton;
 
-    const row = message.components[0];
-    const newAttackButton = ButtonBuilder.from(row.components[0]).setDisabled(
-      false
-    );
-    row.components[0] = newAttackButton;
+    const newRow = new ActionRowBuilder<ButtonBuilder>(actionRowBuild);
 
     return interaction.update({
       embeds: [monsterEmbed],
-      components: [row],
+      components: [newRow],
     });
     
     // const { user, guild, message } = interaction;

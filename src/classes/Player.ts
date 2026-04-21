@@ -138,9 +138,11 @@ export class Player {
   }
 
 
-  private createFightEmbed(monster: Monster) {
+  createFightEmbed() {
+    if (!this.monster) throw new Error(`Player currently no fighting monster`);
+
     const embed = new EmbedBuilder()
-      .setTitle(`${monster.zone}`)
+      .setTitle(`${this.monster.zone}`)
       .setThumbnail('https://i.stack.imgur.com/Fzh0w.png')
       // .setImage('https://i.stack.imgur.com/Fzh0w.png')
       .addFields([
@@ -149,8 +151,8 @@ export class Player {
           value: '\u200B',
         },
         {
-          name: `${monster.name}`,
-          value: `${monster.health}/${monster.maxHealth}`,
+          name: `${this.monster.name}`,
+          value: `${this.monster.health}/${this.monster.maxHealth}`,
           inline: true,
         },
         {
@@ -174,11 +176,9 @@ export class Player {
     return embed;
   };
 
-  async fightMonster(interaction: ChatInputCommandInteraction, monster: Monster) {
-    const monsterEmbed = this.createFightEmbed(monster);
-
-    this.monster = monster
-
+  async fightMonster(interaction: ChatInputCommandInteraction) {
+    const monsterEmbed = this.createFightEmbed();
+    
     const swordButton = new ButtonBuilder()
       .setCustomId('sword')
       .setLabel('sword')

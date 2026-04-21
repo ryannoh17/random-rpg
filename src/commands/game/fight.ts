@@ -41,7 +41,7 @@ export default {
         return interaction.reply("no monster huhhhh");
       }
 
-      return player.fightMonster(interaction, player.monster);
+      return player.fightMonster(interaction);
     }
 
     const selectedArea = title || (interaction.options.getString('area'));
@@ -74,6 +74,7 @@ export default {
     // }
 
     const spawnedMonster = Monster.spawn(selectedArea!);
-    return player.fightMonster(interaction, spawnedMonster);
+    player.monster = spawnedMonster;
+    return player.fightMonster(interaction);
   },
 };
