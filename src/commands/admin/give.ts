@@ -52,7 +52,7 @@ export default {
       player.inventory.addToInventory([selectedItem]);
     } catch (error) {
       console.error(error);
-      return await interaction.reply("user does not exist");
+      return interaction.reply("user does not exist");
     }
 
     try {

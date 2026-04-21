@@ -42,6 +42,8 @@ export default {
       player.isFighting = false;
       monster = null;
 
+      await player.save();
+
       actionRowBuild.components[0] = offSwordButton;
       const newRow = new ActionRowBuilder<ButtonBuilder>(actionRowBuild);
 
@@ -57,7 +59,7 @@ export default {
           value: `${monsterName} has been killed`,
         });
 
-      await interaction.update({
+      return interaction.update({
         embeds: [newEmbed],
         components: [newRow],
       });
@@ -65,6 +67,9 @@ export default {
       // --- WHEN PLAYER DIES ---
 
     } else if (playerHealth <= 0) {
+      player.die();
+      await player.save();
+
       const newNextButton = ButtonBuilder.from(row.components[2] as ButtonComponent).setDisabled(true);
       actionRowBuild.components[0] = offSwordButton;
       actionRowBuild.components[2] = newNextButton;
@@ -87,7 +92,7 @@ export default {
           value: `${user.username} has been killed`,
         });
 
-      await interaction
+      return interaction
         .update({
           embeds: [playerHit],
           components: [newRow],
@@ -100,11 +105,12 @@ export default {
           }, 750);
         });
 
-      player.die();
-
       // --- DEFAULT ---
 
     } else {
+      player.isFighting = true;
+      await player.save();
+
       const playerHit = EmbedBuilder.from(oldEmbed).spliceFields(1, 1, {
         name: `${monsterName}`,
         value: `${monsterHealth}/${monsterMaxHealth}`,
@@ -120,7 +126,7 @@ export default {
       actionRowBuild.components[0] = offSwordButton;
       let newRow = new ActionRowBuilder<ButtonBuilder>(actionRowBuild);
 
-      await interaction
+      return interaction
         .update({
           embeds: [playerHit],
           components: [newRow],
@@ -137,9 +143,6 @@ export default {
           }, 750);
         });
 
-      player.isFighting = true;
     }
-
-    return await player.save();
   },
 };

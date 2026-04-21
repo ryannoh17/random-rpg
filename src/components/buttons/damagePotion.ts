@@ -37,7 +37,7 @@ export default {
 
       player.die();
 
-      return await interaction.update({
+      return interaction.update({
         embeds: [newEmbed],
         components: [],
       });

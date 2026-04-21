@@ -1,42 +1,35 @@
-import { EmbedBuilder } from "discord.js";
+import { ButtonInteraction, EmbedBuilder } from "discord.js";
 import { Profile } from "../../../schemas/profile.js";
+import { Player } from "../../../classes/Player.js";
 
 export default {
   data: {
     name: 'addAgility',
   },
 
-  async execute(interaction) {
+  async execute(interaction: ButtonInteraction) {
     const { user, guild, message } = interaction;
-    const oldEmbed = message.embeds[0];
+    const oldEmbed = message.embeds[0]!;
 
-    const storedProfile = await Profile.findOne({
-      userId: user.id,
-      guildId: guild.id,
-    });
+    let player = await Player.load(user.id, guild!.id);
 
-    const { _id, statPoints, agility } = storedProfile;
+    player.statPoints -= 1;
+    player.agility += 1;
 
-    await Profile.findByIdAndUpdate(
-      { _id },
-      {
-        statPoints: statPoints - 1,
-        agility: agility + 1,
-      }
-    );
+    await player.save();
 
     const newEmbed = EmbedBuilder.from(oldEmbed)
       .spliceFields(12, 1, {
         name: `agility`,
-        value: `${agility + 1}`,
+        value: `${player.agility}`,
         inline: true,
       })
       .spliceFields(6, 1, {
         name: `stat points`,
-        value: `${statPoints - 1}`,
+        value: `${player.statPoints}`,
       });
 
-    if (statPoints - 1 === 0) {
+    if (player.statPoints === 0) {
       return interaction.update({
         embeds: [newEmbed],
         components: [],

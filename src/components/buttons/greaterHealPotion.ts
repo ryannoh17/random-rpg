@@ -24,7 +24,7 @@ export default {
       inline: true,
     });
 
-    return await interaction.update({
+    return interaction.update({
       embeds: [newEmbed],
     });
   },
