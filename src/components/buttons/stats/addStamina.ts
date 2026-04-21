@@ -3,8 +3,10 @@ import { Player } from "../../../classes/Player.js";
 
 export default {
   data: {
-    name: 'addAgility',
+    name: 'addStamina',
   },
+
+  // 8
 
   async execute(interaction: ButtonInteraction) {
     const { user, guild, message } = interaction;
@@ -18,9 +20,9 @@ export default {
     await player.save();
 
     const newEmbed = EmbedBuilder.from(oldEmbed)
-      .spliceFields(12, 1, {
-        name: `agility`,
-        value: `${player.agility}`,
+      .spliceFields(8, 1, {
+        name: `stamina`,
+        value: `${player.stamina}`,
         inline: true,
       })
       .spliceFields(6, 1, {

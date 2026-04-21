@@ -3,7 +3,7 @@ import { Player } from "../../../classes/Player.js";
 
 export default {
   data: {
-    name: 'addAgility',
+    name: 'addDefense',
   },
 
   async execute(interaction: ButtonInteraction) {
@@ -13,14 +13,14 @@ export default {
     let player = await Player.load(user.id, guild!.id);
 
     player.statPoints -= 1;
-    player.agility += 1;
+    player.defense += 1;
 
     await player.save();
 
     const newEmbed = EmbedBuilder.from(oldEmbed)
-      .spliceFields(12, 1, {
-        name: `agility`,
-        value: `${player.agility}`,
+      .spliceFields(9, 1, {
+        name: `defense`,
+        value: `${player.defense}`,
         inline: true,
       })
       .spliceFields(6, 1, {
