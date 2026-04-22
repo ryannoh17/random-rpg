@@ -1,7 +1,7 @@
 import { Profile } from '../schemas/profile.js';
 import { ChatInputCommandInteraction, EmbedBuilder, ButtonBuilder, ButtonStyle, ActionRowBuilder } from "discord.js";
 import { Inventory } from './Inventory.js';
-import type { Monster } from './monster.js';
+import { Monster } from './Monster.js'
 
 export class Player {
   userID: string;

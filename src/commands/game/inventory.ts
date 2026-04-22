@@ -1,12 +1,12 @@
-import { ChatInputCommandInteraction, Client, SlashCommandBuilder } from "discord.js";
-import { Profile } from "../../schemas/profile.js";
+import { ChatInputCommandInteraction, SlashCommandBuilder } from "discord.js";
 import { Player } from "../../classes/Player.js";
 
 export default {
   data: new SlashCommandBuilder()
     .setName('inventory')
     .setDescription('brings up inventory'),
-  async execute(interaction: ChatInputCommandInteraction, client: Client) {
+
+  async execute(interaction: ChatInputCommandInteraction) {
     const { user, guild } = interaction;
 
     if (guild == null) 

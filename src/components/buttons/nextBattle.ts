@@ -1,5 +1,5 @@
 import { ActionRowBuilder, ButtonBuilder, ButtonComponent, ButtonInteraction } from "discord.js";
-import { Monster } from "../../classes/monster.js";
+import { Monster } from "../../classes/Monster.js";
 import { Player } from "../../classes/Player.js";
 
 export default {

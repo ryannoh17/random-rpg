@@ -3,7 +3,6 @@ import {
   ChatInputCommandInteraction,
   SlashCommandBuilder,
 } from "discord.js";
-import { Profile } from "../../schemas/profile.js";
 import { itemArray } from "../../items.js";
 import { Player } from "../../classes/Player.js"
 
@@ -22,7 +21,7 @@ export default {
         .setMinValue(1)
     ),
 
-  async execute(interaction: ChatInputCommandInteraction, client: Client) {
+  async execute(interaction: ChatInputCommandInteraction) {
     const { user, guild } = interaction;
     const userID = user.id;
 

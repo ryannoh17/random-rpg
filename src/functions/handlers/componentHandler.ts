@@ -5,9 +5,9 @@ import type { componentFile } from "../../types.js";
 
 export default (client: Client) => {
   client.componentHandler = async () => {
-    const buttonFiles = await glob(`src/components/buttons/**/*.js`);
+    const buttonFiles = await glob(`dist/components/buttons/**/*.js`);
 
-    const componentFolders = readdirSync(`./src/components`);
+    const componentFolders = readdirSync(`./dist/components`);
     for (const folder of componentFolders) {
       const { buttons } = client;
 

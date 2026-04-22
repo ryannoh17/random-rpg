@@ -51,7 +51,7 @@ client.eventHandler();
 client.componentHandler();
 
 async function doGlob(): Promise<void> {
-  const functionFiles = await glob(`src/functions/handlers/*.js`);
+  const functionFiles = await glob(`dist/functions/handlers/*.js`);
 
   for (const file of functionFiles) {
     const realPath = ("../").concat(file);

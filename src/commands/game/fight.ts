@@ -3,11 +3,9 @@ import {
   ActionRowBuilder,
   ButtonBuilder,
   ButtonStyle,
-  Client,
   ChatInputCommandInteraction,
 } from "discord.js";
-import { Profile } from "../../schemas/profile.js";
-import { Monster } from "../../classes/monster.js";
+import { Monster } from "../../classes/Monster.js";
 import { itemArray } from "../../items.js";
 import { Player } from "../../classes/Player.js";
 
@@ -28,7 +26,7 @@ export default {
         )
     ),
   // eslint-disable-next-line consistent-return
-  async execute(interaction: ChatInputCommandInteraction, client: Client, title: string) {
+  async execute(interaction: ChatInputCommandInteraction, title: string) {
     const { user, guild } = interaction;
 
     if (guild == null)

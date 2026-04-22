@@ -15,7 +15,10 @@ export const shopList = shopItemsArray.map((items) => items!.name);
 // ['healing potion', 'greater healing potion']
 
 export default {
-  data: new SlashCommandBuilder().setName('shop').setDescription('opens shop'),
+  data: new SlashCommandBuilder()
+    .setName('shop')
+    .setDescription('opens shop'),
+    
   async execute(interaction: ChatInputCommandInteraction) {
     const { user, guild } = interaction;
 

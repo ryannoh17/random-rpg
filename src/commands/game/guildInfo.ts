@@ -2,7 +2,7 @@ import type { ChatInputCommandInteraction } from "discord.js";
 import { GuildModel } from "../../schemas/guild.js";
 import { SlashCommandBuilder } from "discord.js";
 
-export const guildInfoCmd = {
+export default {
   data: new SlashCommandBuilder()
     .setName('server')
     .setDescription('Returns server info'),
@@ -11,8 +11,7 @@ export const guildInfoCmd = {
     const { guild }  = interaction;
 
     if (guild == null) {
-      await interaction.reply('We are not in a server');
-      return;
+      return interaction.reply('We are not in a server');
     }
 
     let guildProfile = await GuildModel.findOne({ guildId: guild.id });
