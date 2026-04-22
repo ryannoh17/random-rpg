@@ -21,14 +21,14 @@ export default (client: Client) => {
       }
     }
 
-    const clientId = "1079791021560438854";
-    // const guildId = '913995256385646603';
+    const clientID = "1079791021560438854";
+    // const guildID = '913995256385646603';
     const rest = new REST({ version: "10" }).setToken(process.env.DISCORD_BOT_KEY!);
 
     try {
       console.log("starting commands");
 
-      await rest.put(Routes.applicationCommands(clientId), {
+      await rest.put(Routes.applicationCommands(clientID), {
         body: client.commandArray,
       });
 

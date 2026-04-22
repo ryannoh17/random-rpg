@@ -19,7 +19,7 @@ export default {
     const selectedUser = interaction.options.getUser('target') || user;
 
     const result = await Profile.updateOne(
-      { userId: selectedUser.id, guildId: guild.id },
+      { userID: selectedUser.id, guildID: guild.id },
       {
         maxHealth: 100,
         health: 100,

@@ -10,7 +10,7 @@ export default {
   async execute(interaction: ButtonInteraction) {
     const { user, guild, message, component: button } = interaction;
 
-    let player = await Player.load(user.id, guild!.id);
+    let player = (await Player.load(user.id, guild!.id))!;
 
     const oldEmbed = message.embeds[0]!;
 

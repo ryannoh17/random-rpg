@@ -17,8 +17,8 @@ export default {
     }
 
     const result = await Profile.deleteOne({
-      userId: user.id,
-      guildId: guild.id,
+      userID: user.id,
+      guildID: guild.id,
     });
 
     if (result.deletedCount === 1) {

@@ -15,7 +15,7 @@ export default {
       return interaction.reply('not an admin can not use');
 
     const result = await Profile.updateOne(
-      { userId: user.id, guildId: guild.id },
+      { userID: user.id, guildID: guild.id },
       {
         health: 999,
         strength: 999,

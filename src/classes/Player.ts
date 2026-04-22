@@ -79,8 +79,8 @@ export class Player {
    */
   static async load(userID: string, guildID: string): Promise<Player | null> {
     const storedProfile = await Profile.findOne({
-      userId: userID,
-      guildId: guildID,
+      userID: userID,
+      guildID: guildID,
     });
 
     if (!storedProfile) return null;
