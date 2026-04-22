@@ -12,11 +12,17 @@ export class Inventory {
     this.coins = coins;
   }
 
-  // adds specified quantity of items to a section of the inventory
+
+  /**
+   * adds specified quantity of items to a section of the inventory
+   * 
+   * @param invIndex - index of the inventory segment to add item to
+   * @param itemToAdd - 
+   */
   private addItem(invIndex: number, itemToAdd: ItemType): void {
     let invSegment = this.items[invIndex];
 
-    if (!invSegment) throw new Error("invIndex out of inventory bounds");
+    if (!invSegment) throw new Error(`invIndex ${invIndex} out of inventory bounds`);
 
     let itemIndex = invSegment.findIndex((currItem) => currItem.id === itemToAdd.id);
 
@@ -29,25 +35,39 @@ export class Inventory {
     }
   }
 
-  // loops through all items in array and adds to inventory in the correct segments
+  /**
+   * loops through all items in array and adds to inventory in the correct segments
+   * 
+   * @param itemsToAdd - array of items that will be added to inventory
+   */
   addToInventory(itemsToAdd: ItemType[]): void {
     for (const currItem of itemsToAdd) {
       switch (currItem.type) {
         case "material":
           this.addItem(0, currItem);
           break;
+
         case "potion":
           this.addItem(1, currItem);
           break;
+
         case "equipment":
           this.addItem(2, currItem);
           break;
+
+        default:
+          throw new Error(`item ${currItem.name} has invalid inventory segment type`);
       }
     }
   }
 
-  // turns inventory items into a string array so it can be printed
-  private mapInventorySection(sectionIndex: number): string[] {
+
+  /**
+   * turns inventory items into a string array so it can be printed
+   * 
+   * @param sectionIndex - index for a specific inventory segment
+   */
+  private inventoryToString(sectionIndex: number): string[] {
     const sectionArray = this.items[sectionIndex]!.map((item) => {
       if (item.quantity > 1) {
         return `${item.name} x${item.quantity}`;
@@ -58,7 +78,10 @@ export class Inventory {
     return sectionArray;
   }
 
-  createInvEmbed() {
+  /**
+   * creates the embed to display player inventory
+   */
+  createInvEmbed(): EmbedBuilder {
     const coinAmount = this.coins;
 
     const embed = new EmbedBuilder()
@@ -89,21 +112,21 @@ export class Inventory {
     if (this.items[0]!.length > 0) {
       embed.spliceFields(1, 1, {
         name: 'Materials',
-        value: `${this.mapInventorySection(0)}`,
+        value: `${this.inventoryToString(0)}`,
         inline: true,
       });
     }
     if (this.items[1]!.length > 0) {
       embed.spliceFields(2, 1, {
         name: 'Potions',
-        value: `${this.mapInventorySection(1)}`,
+        value: `${this.inventoryToString(1)}`,
         inline: true,
       });
     }
     if (this.items[2]!.length > 0) {
       embed.spliceFields(3, 1, {
         name: 'Equipment',
-        value: `${this.mapInventorySection(2)}`,
+        value: `${this.inventoryToString(2)}`,
         inline: true,
       });
     }
@@ -111,7 +134,12 @@ export class Inventory {
     return embed;
   }
 
-  // fields are the headers of sections in the embed
+
+  /**
+   * gets the index of the embed field that the pointer is currently in
+   * 
+   * @param fields - headers of sections in the embed
+   */
   static getShopItemsFieldIndex(fields: APIEmbedField[]) {
     let invIndex = -1;
     for (let i = 1; i < fields.length; i++) {
@@ -139,14 +167,12 @@ export class Inventory {
     return invIndex;
   }
 
-  // CHANGE THIS SHIT U DONT NEED IT KINDA
-  // should just have buttons change a number than have a button that takes that number
-  // and adds or subtracts that from inventory (confirm button)
-  /*
-  get embed from button interaction
-  find the item the indicator is on and increment it by x
-  get player coins from embed
-  calculate new coin count and show on embed with new item count
+
+  /**
+   * increases shop embed item quanity by specified amount
+   * 
+   * @param interaction - interaction to grab embed from
+   * @param buyQuantity - number to increase item by
   */
   static buySome(interaction: ButtonInteraction, buyQuantity: number) {
     const oldEmbed = interaction.message.embeds[0]!;
@@ -159,13 +185,14 @@ export class Inventory {
     })();
     const shopItemsList = value.split('\n');
 
-    // get [ selected shop item name ] and [ new item count ]
+    // get [ selected shop item name ]
     const shopItemIndex = shopItemsList.findIndex((item) => item.includes('*'));
     if (shopItemIndex === -1) throw new Error("ADD EXCEPTION HANDLING TO THIS")
     const shopItemStr = shopItemsList[shopItemIndex] ?? (() => {
       throw new Error(`no shop item exists at index: [ ${shopItemIndex} ]`)
     })();
 
+    // calculates [ new item count ]
     const quantityRegex = /x\d+/g;
     const regexRes = quantityRegex.exec(shopItemStr);
     let itemCount = 0;
@@ -186,26 +213,14 @@ export class Inventory {
       throw new Error(`could not find item with name [ ${shopItemName} ] in [ shopItemsArray ]`)
     })();
 
-    // // bruh how do i efficiently find it in inventory
-    // let { quantity: invQuantity } = this.items[shopFieldIndex - 1]!.find(
-    //   (item) => item.name === shopEmbedItemName
-    // ) ?? { quantity: -1 };
-
-    // if (invQuantity === -1) {
-    //   // maybe make it throw error
-    //   console.log('item does not exist in inventory');
-    //   invQuantity = 0;
-    // }
-
     // get player [ coin count ] from embed
     const { value: coinStr } = fields[0] ?? (() => {
       throw new Error(`field with index [ 0 ] does not exist`);
     })();
     let coins = parseInt(coinStr);
 
-    // change this so that it just disables confirm button when greater
+    // CHANGE TO DISABLE CONFIRM BUY BUTTON
     if (price > coins) {
-      // figure something out the player can see
       console.log('item costs too much');
       return null;
     }
@@ -214,7 +229,6 @@ export class Inventory {
     const coinCount = coins - price * buyQuantity;
 
     shopItemsList[shopItemIndex] = `**${shopItemName} x${itemCount}**`;
-
     const nameList = shopItemsList.join('\n');
 
     const newEmbed = EmbedBuilder.from(oldEmbed)
@@ -233,9 +247,7 @@ export class Inventory {
 
   // this should be changed to be similar to buy some and sell confirm should become
   // similar to this function
-
   // MAKE SURE TO DISABLE SELLING MORE THEN ALL QUANTITIES (might be alr done)
-
   // THIS SHIT DOES NOT WORK PLS FIXXXX (only modified to be compilable)
   static async sellSome(interaction: ButtonInteraction, sellQuantity?: number) {
     // CODE DOES NOT WORK FOR LAST ITEM PLS FIX (i think its fixed)
@@ -323,15 +335,20 @@ export class Inventory {
         });
     }
 
-    // save function used to be here
-
     return newEmbed;
   }
 
-  static switchInvTab(interaction: ButtonInteraction, num: number) {
+
+  /**
+   * switches selected inventory embed segment
+   * 
+   * @param interaction - interaction to grab embed from
+   * @param segIndex - index of the segment to switch too
+   */
+  static switchInvTab(interaction: ButtonInteraction, segIndex: number) {
     const oldEmbed = interaction.message.embeds[0]!;
     const { fields } = oldEmbed;
-    const { name, value: segItems } = fields[num]!;
+    const { name, value: segItems } = fields[segIndex]!;
     let otherItems;
     let otherIndex;
 
@@ -364,16 +381,16 @@ export class Inventory {
       }
     }
 
-    fields[num]!.name = `__${name}__`;
+    fields[segIndex]!.name = `__${name}__`;
 
     if (segItems.length > 1) {
       const segList = segItems.split('\n');
       segList[0] = `**${segList[0]}**`;
       const newItems = segList.join('\n');
 
-      oldEmbed.fields[num]!.value = newItems;
+      oldEmbed.fields[segIndex]!.value = newItems;
 
-      if (otherIndex && otherIndex !== num && otherItems) {
+      if (otherIndex && otherIndex !== segIndex && otherItems) {
         oldEmbed.fields[otherIndex]!.value = otherItems;
       }
     }

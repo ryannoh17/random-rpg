@@ -13,10 +13,13 @@ export default {
       return interaction.reply("user not in a server");
     
     let player = await Player.load(user.id, guild.id);
-    const embed = player.inventory.createInvEmbed();
+    if (!player) {
+      return interaction.reply("create a player first with /create");
+    }
+    const invEmbed = player.inventory.createInvEmbed();
 
     return interaction.reply({
-      embeds: [embed],
+      embeds: [invEmbed],
       ephemeral: true,
     });
   },
