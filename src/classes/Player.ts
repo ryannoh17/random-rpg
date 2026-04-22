@@ -74,16 +74,16 @@ export class Player {
    * loads the player if they exist within the database
    *
    * @param userID - ID specific to each user
-   * @param guildID - ID specific to server
-   * @returns - The player with specified IDs
+   * @param guildID - ID specific to each server
+   * @returns The player with specified IDs or null otherwise
    */
-  static async load(userID: string, guildID: string): Promise<Player> {
+  static async load(userID: string, guildID: string): Promise<Player | null> {
     const storedProfile = await Profile.findOne({
       userId: userID,
       guildId: guildID,
     });
 
-    if (!storedProfile) throw new Error("[ specified profile does not exist ]");
+    if (!storedProfile) return null;
 
     const newPlayer = new Player(
       storedProfile.userID,
@@ -111,6 +111,10 @@ export class Player {
     return newPlayer;
   }
 
+
+  /**
+   * saves current player to database
+   */
   async save(): Promise<void> {
     await Profile.updateOne(
       { userId: this.userID, guildId: this.guildID },
@@ -138,8 +142,11 @@ export class Player {
   }
 
 
-  createFightEmbed() {
-    if (!this.monster) throw new Error(`Player currently no fighting monster`);
+  /**
+   * returns the emebed for fights
+   */
+  createFightEmbed(): EmbedBuilder {
+    if (!this.monster) throw new Error(`called while player is not fighting any monster`);
 
     const embed = new EmbedBuilder()
       .setTitle(`${this.monster.zone}`)
@@ -176,39 +183,10 @@ export class Player {
     return embed;
   };
 
-  async fightMonster(interaction: ChatInputCommandInteraction) {
-    const monsterEmbed = this.createFightEmbed();
-    
-    const swordButton = new ButtonBuilder()
-      .setCustomId('sword')
-      .setLabel('sword')
-      .setStyle(ButtonStyle.Primary);
 
-    const potionButton = new ButtonBuilder()
-      .setCustomId('potions')
-      .setLabel('potions')
-      .setStyle(ButtonStyle.Secondary);
-
-    const nextButton = new ButtonBuilder()
-      .setCustomId('nextBattle')
-      .setLabel('next')
-      .setStyle(ButtonStyle.Primary);
-
-    const row = new ActionRowBuilder<ButtonBuilder>().addComponents(
-      swordButton,
-      potionButton,
-      nextButton
-    );
-
-    interaction.reply({
-      embeds: [monsterEmbed],
-      components: [row],
-    });
-
-    await this.save();
-  }
-
-
+  /**
+   * 
+   */
   addExp(expPoints: number) {
     this.exp += expPoints;
 

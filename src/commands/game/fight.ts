@@ -6,7 +6,6 @@ import {
   ChatInputCommandInteraction,
 } from "discord.js";
 import { Monster } from "../../classes/Monster.js";
-import { itemArray } from "../../items.js";
 import { Player } from "../../classes/Player.js";
 
 export default {
@@ -26,53 +25,50 @@ export default {
         )
     ),
   // eslint-disable-next-line consistent-return
-  async execute(interaction: ChatInputCommandInteraction, title: string) {
+  async execute(interaction: ChatInputCommandInteraction) {
     const { user, guild } = interaction;
 
     if (guild == null)
       return interaction.reply("user not in a server");
 
     let player = await Player.load(user.id, guild.id);
-    
-    if (player.isFighting) {
-      if (!player.monster) {
-        return interaction.reply("no monster huhhhh");
-      }
-
-      return player.fightMonster(interaction);
+    if (!player) {
+      return interaction.reply("create a player first with /create");
     }
 
-    const selectedArea = title || (interaction.options.getString('area'));
+    const selectedArea = interaction.options.getString('area')!;
 
-    // switch (selectedArea) {
-    //   case 'Dummy': {
-    //     const drops = [itemArray[0]];
-    //     const dummy = new Monster('Dummy', 30, 0, drops);
+    if (!player.isFighting) {
+      const spawnedMonster = Monster.spawn(selectedArea!);
+      player.monster = spawnedMonster;
+    }
 
-    //     player.monster = dummy;
+    const fightEmbed = player.createFightEmbed();
 
-    //     await client.fightMonster(interaction, dummy, row, selectedArea);
-    //     break;
-    //   }
+    const swordButton = new ButtonBuilder()
+      .setCustomId('sword')
+      .setLabel('sword')
+      .setStyle(ButtonStyle.Primary);
 
-    //   case 'Sunlit Meadows': {
-    //     const monster = await client.fromSLM();
-    //     await client.fightMonster(interaction, monster, row, selectedArea);
-    //     break;
-    //   }
+    const potionButton = new ButtonBuilder()
+      .setCustomId('potions')
+      .setLabel('potions')
+      .setStyle(ButtonStyle.Secondary);
 
-    //   case 'Greenwood': {
-    //     const monster = await client.fromGNW();
-    //     await client.fightMonster(interaction, monster, row, selectedArea);
-    //     break;
-    //   }
+    const nextButton = new ButtonBuilder()
+      .setCustomId('nextBattle')
+      .setLabel('next')
+      .setStyle(ButtonStyle.Primary);
 
-    //   default:
-    //     break;
-    // }
+    const row = new ActionRowBuilder<ButtonBuilder>().addComponents(
+      swordButton,
+      potionButton,
+      nextButton
+    );
 
-    const spawnedMonster = Monster.spawn(selectedArea!);
-    player.monster = spawnedMonster;
-    return player.fightMonster(interaction);
+    return interaction.reply({
+      embeds: [fightEmbed],
+      components: [row],
+    });
   },
 };
