@@ -1,5 +1,5 @@
 import { Profile } from '../schemas/profile.js';
-import { ChatInputCommandInteraction, EmbedBuilder, ButtonBuilder, ButtonStyle, ActionRowBuilder } from "discord.js";
+import { EmbedBuilder } from "discord.js";
 import { Inventory } from './Inventory.js';
 import { Monster } from './Monster.js'
 
