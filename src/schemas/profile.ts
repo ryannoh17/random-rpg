@@ -4,8 +4,8 @@ import { ItemSchema } from "./item.js";
 
 const profileScehma = new Schema({
   userID: { type: String, required: true },
-  tag: { type: String, required: true },
   guildID: { type: String, required: true },
+  name: { type: String, required: true },
   maxHealth: { type: Number, default: 100, required: true },
   health: { type: Number, default: 100, required: true },
   maxMana: { type: Number, default: 0, required: true },
@@ -22,7 +22,7 @@ const profileScehma = new Schema({
   maxExp: { type: Number, default: 100, required: true },
   monster: { type: MonsterSchema, default: null, required: true },
   isFighting: { type: Boolean, default: false, required: true },
-  inventory: { type: [[ItemSchema]], default: [[],[],[]], required: true },
+  inventory: { type: [[ItemSchema]], default: [[], [], []], required: true },
   coins: { type: Number, default: 0, required: true }
 });
 

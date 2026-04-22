@@ -12,25 +12,23 @@ export default {
     if (guild == null)
       return interaction.reply("user not in a server");
 
-    const { id: userID, tag } = user;
+    const { id: userID, username } = user;
     const { id: guildID } = guild;
 
     const result = await Profile.updateOne(
-      { userId: userID, tag: tag, guildId: guildID },
-      { userId: userID, tag: tag, guildId: guildID },
+      { userID: userID, guildID: guildID },
+      { userID: userID, guildID: guildID, name: username },
       { upsert: true }
     );
 
     if (result.upsertedId) {
-      console.log(`New Profile: ${user.tag}`);
       return interaction.reply({
-        content: `${user.username}'s profile has been created`,
-        ephemeral: true,
+        content: `${username}'s profile has been created`,
       });
     }
 
     return interaction.reply({
-      content: "Player profile already exists",
+      content: `${username}'s profile already exists`,
       ephemeral: true,
     });
   },

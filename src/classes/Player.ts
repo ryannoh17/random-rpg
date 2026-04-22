@@ -5,8 +5,8 @@ import { Monster } from './Monster.js'
 
 export class Player {
   userID: string;
-  tag: string;
   guildID: string;
+  name: string;
   maxHealth: number;
   health: number;
   maxMana: number;
@@ -27,8 +27,8 @@ export class Player {
 
   private constructor(
     userID: string,
-    tag: string,
     guildID: string,
+    name: string, 
     maxHealth: number,
     health: number,
     maxMana: number,
@@ -48,8 +48,8 @@ export class Player {
     inventory: Inventory,
   ) {
     this.userID = userID;
-    this.tag = tag;
     this.guildID = guildID;
+    this.name = name;
     this.maxHealth = maxHealth;
     this.health = health;
     this.maxMana = maxMana;
@@ -87,8 +87,8 @@ export class Player {
 
     const newPlayer = new Player(
       storedProfile.userID,
-      storedProfile.tag,
       storedProfile.guildID,
+      storedProfile.name,
       storedProfile.maxHealth,
       storedProfile.health,
       storedProfile.maxMana,
@@ -161,7 +161,7 @@ export class Player {
           inline: true,
         },
         {
-          name: `${this.tag}`,
+          name: `${this.name}`,
           value: `${this.health}/${this.maxHealth}`,
           inline: true,
         },
