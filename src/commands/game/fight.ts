@@ -41,6 +41,8 @@ export default {
     if (!player.isFighting) {
       const spawnedMonster = Monster.spawn(selectedArea!);
       player.monster = spawnedMonster;
+      
+      await player.save();
     }
 
     const fightEmbed = player.createFightEmbed();
